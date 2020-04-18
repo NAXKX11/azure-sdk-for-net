@@ -10,6 +10,13 @@ jobs:
   - job: "Test"
     variables:
       - template: ../variables/globals.yml
+      - name: azureCloudArmParameters
+        value: "@{ storageEndpointSuffix = 'core.windows.net'; azureCloud = 'AzureCloud'; }"
+      - name: azureUSGovernmentArmParameters
+        value: "@{ storageEndpointSuffix = 'core.usgovcloudapi.net'; azureCloud = 'AzureUSGovernment'; }"
+      - name: azureChinaCloudArmParameters
+        value: "@{ storageEndpointSuffix = 'core.chinacloudapi.cn'; azureCloud = 'AzureChinaCloud'; }"
+
 
     timeoutInMinutes: ${{ parameters.TimeoutInMinutes }}
 
@@ -83,12 +90,6 @@ jobs:
           ArmTemplateParameters: $(azureChinaCloudArmParameters)
     pool:
       vmImage: "$(OSVmImage)"
-
-    variables:
-      azureCloudArmParameters: "@{ storageEndpointSuffix = 'core.windows.net'; azureCloud = 'AzureCloud'; }"
-      azureUSGovernmentArmParameters: "@{ storageEndpointSuffix = 'core.usgovcloudapi.net'; azureCloud = 'AzureUSGovernment'; }"
-      azureChinaCloudArmParameters: "@{ storageEndpointSuffix = 'core.chinacloudapi.cn'; azureCloud = 'AzureChinaCloud'; }"
-
 
     steps:
       - ${{ parameters.PreSteps }}
