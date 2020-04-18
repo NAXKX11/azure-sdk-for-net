@@ -16,34 +16,79 @@ jobs:
     strategy:
       maxParallel: ${{ parameters.MaxParallel }}
       matrix:
-        Linux:
+        # US Government
+        Linux (AzureUSGovernment):
           OSName: "Linux"
           OSVmImage: "ubuntu-16.04"
           TestTargetFramework: netcoreapp2.1
-          CloudType: AzureCloud
-        Windows_NetCoreApp:
+          CloudType: AzureUSGovernment
+          ArmTemplateParameters: $(azureUSGovernmentArmParameters)
+        Windows_NetCoreApp (AzureUSGovernment):
           OSName: "Windows"
           OSVmImage: "windows-2019"
           TestTargetFramework: netcoreapp2.1
-          CloudType: AzureCloud
-        Windows_NetCoreApp_ProjectReferences:
+          CloudType: AzureUSGovernment
+          ArmTemplateParameters: $(azureUSGovernmentArmParameters)
+        Windows_NetCoreApp_ProjectReferences (AzureUSGovernment):
           OSName: "Windows"
           OSVmImage: "windows-2019"
           TestTargetFramework: netcoreapp2.1
-          CloudType: AzureCloud
+          CloudType: AzureUSGovernment
+          ArmTemplateParameters: $(azureUSGovernmentArmParameters)
           ConvertToProjectReferenceOption: /p:UseProjectReferenceToAzureClients=true
-        Windows_NetFramework:
+        Windows_NetFramework (AzureUSGovernment):
           OSName: "Windows"
           OSVmImage: "windows-2019"
           TestTargetFramework: net461
-          CloudType: AzureCloud
-        MacOs:
+          CloudType: AzureUSGovernment
+          ArmTemplateParameters: $(azureUSGovernmentArmParameters)
+        MacOs (AzureUSGovernment):
           OSName: "MacOS"
           OSVmImage: "macOS-10.15"
           TestTargetFramework: netcoreapp2.1
-          CloudType: AzureCloud
+          CloudType: AzureUSGovernment
+          ArmTemplateParameters: $(azureUSGovernmentArmParameters)
+
+        # China Cloud
+        Linux (AzureChinaCloud):
+          OSName: "Linux"
+          OSVmImage: "ubuntu-16.04"
+          TestTargetFramework: netcoreapp2.1
+          CloudType: AzureChinaCloud
+          ArmTemplateParameters: $(azureChinaCloudArmParameters)
+        Windows_NetCoreApp (AzureChinaCloud):
+          OSName: "Windows"
+          OSVmImage: "windows-2019"
+          TestTargetFramework: netcoreapp2.1
+          CloudType: AzureChinaCloud
+          ArmTemplateParameters: $(azureChinaCloudArmParameters)
+        Windows_NetCoreApp_ProjectReferences (AzureChinaCloud):
+          OSName: "Windows"
+          OSVmImage: "windows-2019"
+          TestTargetFramework: netcoreapp2.1
+          CloudType: AzureChinaCloud
+          ArmTemplateParameters: $(azureChinaCloudArmParameters)
+          ConvertToProjectReferenceOption: /p:UseProjectReferenceToAzureClients=true
+        Windows_NetFramework (AzureChinaCloud):
+          OSName: "Windows"
+          OSVmImage: "windows-2019"
+          TestTargetFramework: net461
+          CloudType: AzureChinaCloud
+          ArmTemplateParameters: $(azureChinaCloudArmParameters)
+        MacOs (AzureChinaCloud):
+          OSName: "MacOS"
+          OSVmImage: "macOS-10.15"
+          TestTargetFramework: netcoreapp2.1
+          CloudType: AzureChinaCloud
+          ArmTemplateParameters: $(azureChinaCloudArmParameters)
     pool:
       vmImage: "$(OSVmImage)"
+
+    variables:
+      azureCloudArmParameters: "@{ storageEndpointSuffix = 'core.windows.net'; azureCloud = 'AzureCloud'; }"
+      azureUSGovernmentArmParameters: "@{ storageEndpointSuffix = 'core.usgovcloudapi.net'; azureCloud = 'AzureUSGovernment'; }"
+      azureChinaCloudArmParameters: "@{ storageEndpointSuffix = 'core.chinacloudapi.cn'; azureCloud = 'AzureChinaCloud'; }"
+
 
     steps:
       - ${{ parameters.PreSteps }}
