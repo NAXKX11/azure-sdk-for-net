@@ -48,6 +48,10 @@
             "metadata": {
                 "description": "Whether to enable soft delete for the Key Vault. The default is true."
             }
+        },
+        "keyVaultSku": {
+            "type": "string",
+            "defaultValue": "premium"
         }
     },
     "variables": {
@@ -62,7 +66,7 @@
             "properties": {
                 "sku": {
                     "family": "A",
-                    "name": "premium"
+                    "name": "[parameters('keyVaultSku')]"
                 },
                 "tenantId": "[parameters('tenantId')]",
                 "accessPolicies": [
