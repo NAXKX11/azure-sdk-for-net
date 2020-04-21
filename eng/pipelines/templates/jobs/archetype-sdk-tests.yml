@@ -113,6 +113,7 @@ jobs:
       - template: /eng/common/TestResources/deploy-test-resources.yml
         parameters:
           ServiceDirectory: '${{ parameters.ServiceDirectory }}'
+          ArmTemplateParameters: $(ArmTemplateParameters)
 
       - script: >
           dotnet test eng/service.proj
