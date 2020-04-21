@@ -55,7 +55,7 @@
         },
         "keyVaultHostnameSuffix": {
             "type": "string",
-            "defaultValue": "vault.azure.net"
+            "defaultValue": ".vault.azure.net"
         },
         "keyVaultSku": {
             "type": "string",
@@ -63,7 +63,7 @@
         }
     },
     "variables": {
-        "azureKeyVaultUrl": "[format('https://{0}.{1}', parameters('baseName'), parameters('keyVaultHostnameSuffix')]"
+        "azureKeyVaultUrl": "[format('https://{0}{1}', parameters('baseName'), parameters('keyVaultHostnameSuffix')]"
     },
     "resources": [
         {

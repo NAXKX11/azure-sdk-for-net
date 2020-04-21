@@ -11,12 +11,11 @@ jobs:
     variables:
       - template: ../variables/globals.yml
       - name: azureCloudArmParameters
-        value: "@{ storageEndpointSuffix = 'core.windows.net'; azureCloud = 'AzureCloud'; }"
+        value: "@{}"
       - name: azureUSGovernmentArmParameters
-        value: "@{ storageEndpointSuffix = 'core.usgovcloudapi.net'; azureCloud = 'AzureUSGovernment'; azureAuthorityHost = 'https://login.microsoftonline.us/'}"
+        value: "@{ azureAuthorityHost = 'https://login.microsoftonline.us/'; keyVaultHostnameSuffix = '.vault.usgovcloudapi.net' }"
       - name: azureChinaCloudArmParameters
-        value: "@{ storageEndpointSuffix = 'core.chinacloudapi.cn'; azureCloud = 'AzureChinaCloud'; azureAuthorityHost = 'https://login.chinacloudapi.cn'; keyVaultSku = 'standard' }"
-
+        value: "@{ azureAuthorityHost = 'https://login.chinacloudapi.cn'; keyVaultHostnameSuffix = '.vault.azure.cn'; keyVaultSku = 'standard' }"
 
     timeoutInMinutes: ${{ parameters.TimeoutInMinutes }}
 
