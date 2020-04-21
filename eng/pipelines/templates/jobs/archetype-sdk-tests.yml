@@ -13,9 +13,9 @@ jobs:
       - name: azureCloudArmParameters
         value: "@{ storageEndpointSuffix = 'core.windows.net'; azureCloud = 'AzureCloud'; }"
       - name: azureUSGovernmentArmParameters
-        value: "@{ storageEndpointSuffix = 'core.usgovcloudapi.net'; azureCloud = 'AzureUSGovernment'; }"
+        value: "@{ storageEndpointSuffix = 'core.usgovcloudapi.net'; azureCloud = 'AzureUSGovernment'; azureAuthorityHost = 'https://login.microsoftonline.us/'}"
       - name: azureChinaCloudArmParameters
-        value: "@{ storageEndpointSuffix = 'core.chinacloudapi.cn'; azureCloud = 'AzureChinaCloud'; keyVaultSku = 'standard' }"
+        value: "@{ storageEndpointSuffix = 'core.chinacloudapi.cn'; azureCloud = 'AzureChinaCloud'; azureAuthorityHost = 'https://login.chinacloudapi.cn'; keyVaultSku = 'standard' }"
 
 
     timeoutInMinutes: ${{ parameters.TimeoutInMinutes }}

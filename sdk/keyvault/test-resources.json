@@ -9,6 +9,10 @@
                 "description": "The base resource name."
             }
         },
+        "azureAuthorityHost": {
+            "type": "string",
+            "defaultValue": "https://login.microsoftonline.com"
+        },
         "tenantId": {
             "type": "string",
             "defaultValue": "72f988bf-86f1-41af-91ab-2d7cd011db47",
@@ -49,13 +53,17 @@
                 "description": "Whether to enable soft delete for the Key Vault. The default is true."
             }
         },
+        "keyVaultHostnameSuffix": {
+            "type": "string",
+            "defaultValue": "vault.azure.net"
+        },
         "keyVaultSku": {
             "type": "string",
             "defaultValue": "premium"
         }
     },
     "variables": {
-        "azureKeyVaultUrl": "[format('https://{0}.vault.azure.net', parameters('baseName'))]"
+        "azureKeyVaultUrl": "[format('https://{0}.{1}', parameters('baseName'), parameters('keyVaultHostnameSuffix)]"
     },
     "resources": [
         {
@@ -142,6 +150,10 @@
         "AZURE_CLIENT_SECRET": {
             "type": "string",
             "value": "[parameters('testApplicationSecret')]"
+        },
+        "AZURE_AUTHORITY_HOST": {
+            "type": "string",
+            "value": "[parameters('azureAuthorityHost')]"
         },
         "AZURE_KEYVAULT_URL": {
             "type": "string",
