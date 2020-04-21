@@ -63,7 +63,7 @@
         }
     },
     "variables": {
-        "azureKeyVaultUrl": "[format('https://{0}{1}', parameters('baseName'), parameters('keyVaultHostnameSuffix')]"
+        "azureKeyVaultUrl": "[format('https://{0}{1}', parameters('baseName'), parameters('keyVaultHostnameSuffix'))]"
     },
     "resources": [
         {
