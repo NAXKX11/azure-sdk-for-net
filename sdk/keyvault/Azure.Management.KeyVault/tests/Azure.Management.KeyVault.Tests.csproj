@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>$(RequiredTargetFrameworks);net47</TargetFrameworks>
+    <NoWarn>$(NoWarn);CA1812;SA1633</NoWarn>
+  </PropertyGroup>
+
+  <Import Project="..\..\..\core\Azure.Core\tests\TestFramework.props" />
+
+  <!--<Import Project="..\..\Azure.Security.KeyVault.Shared\tests\Azure.Security.KeyVault.Shared.Tests.projitems" Label="Shared" />-->
+
+  <ItemGroup>
+    <PackageReference Include="Azure.Identity" />
+    <PackageReference Include="nunit" />
+    <PackageReference Include="NUnit3TestAdapter" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="Moq" />
+    <PackageReference Include="BenchmarkDotNet" />
+    <PackageReference Include="System.Text.Json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\core\Azure.Core\src\Azure.Core.csproj" />
+    <ProjectReference Include="..\..\..\identity\Azure.Identity\src\Azure.Identity.csproj" />
+    <ProjectReference Include="..\src\Azure.Management.KeyVault.csproj" />
+    <ProjectReference Include="..\..\..\testcommon\Azure.Graph.Rbac\src\Azure.Graph.Rbac.csproj" />
+    <ProjectReference Include="..\..\..\testcommon\Azure.Management.Resource\src\Azure.Management.Resource.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\..\core\Azure.Core\src\Shared\HashCodeBuilder.cs" />
+    <Compile Include="..\..\..\core\Azure.Core\src\Shared\ArrayBufferWriter.cs" />
+  </ItemGroup>
+
+</Project>
