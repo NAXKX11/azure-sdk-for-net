@@ -79,6 +79,11 @@ namespace Azure.Management.KeyVault.Tests
                 //TODO: verify in record mode; seems graph request is not in records, why?
                 var userName = TestEnvironment.UserName;
                 this.objectId = (await GraphUsersClient.GetAsync(userName)).Value.ObjectId;
+
+                ServicePrincipalsClient client;
+                var = client.ListAsync($"appId eq {this.ClientId}");
+                var odataQuery = new ODataQuery<ServicePrincipal>(sp => sp.AppId == acsServicePrincipal.SpId);
+                var servicePrincipal = GraphClient.ServicePrincipals.List(odataQuery).First();
             }
 
             rgName = Recording.GenerateAssetName("sdktestrg");

@@ -3,11 +3,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Azure.Core.Testing;
 using Azure.Identity;
 using Azure.Management.KeyVault.Models;
+using Microsoft.CodeAnalysis.CSharp;
+using Moq.Protected;
 using NUnit.Framework;
 
 namespace Azure.Management.KeyVault.Tests
@@ -32,6 +35,106 @@ namespace Azure.Management.KeyVault.Tests
         }
 
         [Test]
+        public async Task KeyVaultManagementVaultCreateUpdateDelete()
+        {
+            vaultProperties.EnableSoftDelete = null;
+
+            var parameters = new VaultCreateOrUpdateParameters(location, vaultProperties);
+            parameters.Tags = tags;
+
+            var rawVault = await VaultsClient.StartCreateOrUpdateAsync(
+                rgName,
+                vaultName,
+                parameters);
+
+            var createdVault = (await rawVault.WaitForCompletionAsync()).Value;
+
+            ValidateVault(createdVault,
+                vaultName,
+                rgName,
+                subscriptionId,
+                tenantIdGuid,
+                location,
+                "A",
+                SkuName.Standard,
+                true,
+                true,
+                true,
+                true, // enableSoftDelete defaults to true
+                new[] { accPol },
+                vaultProperties.NetworkAcls,
+                tags);
+
+            //Update
+
+            //TODO: Set Sku.Name
+            //createdVault.Properties.Sku.Name = SkuName.Premium;
+            accPol.Permissions.Secrets = new SecretPermissions[] { SecretPermissions.Get, SecretPermissions.Set };
+            accPol.Permissions.Keys = null;
+            accPol.Permissions.Storage = new StoragePermissions[] { StoragePermissions.Get, StoragePermissions.Regeneratekey };
+            createdVault.Properties.AccessPolicies = new[] { accPol };
+
+            parameters = new VaultCreateOrUpdateParameters(location, createdVault.Properties);
+            parameters.Tags = tags;
+            var rawUpdateVault = await VaultsClient.StartCreateOrUpdateAsync(
+                resourceGroupName: rgName,
+                vaultName: vaultName,
+                parameters: parameters
+                );
+
+            var updateVault = (await rawUpdateVault.WaitForCompletionAsync()).Value;
+
+            ValidateVault(updateVault,
+                vaultName,
+                rgName,
+                subscriptionId,
+                tenantIdGuid,
+                location,
+                "A",
+                SkuName.Premium,
+                true,
+                true,
+                true,
+                true,
+                new[] { accPol },
+                vaultProperties.NetworkAcls,
+                tags);
+
+            var rawRetrievedVault = await VaultsClient.GetAsync(
+                resourceGroupName: rgName,
+                vaultName: vaultName);
+
+            var retrievedVault = rawRetrievedVault.Value;
+            ValidateVault(retrievedVault,
+                vaultName,
+                rgName,
+                subscriptionId,
+                tenantIdGuid,
+                location,
+                "A",
+                SkuName.Premium,
+                true,
+                true,
+                true,
+                true,
+                new[] { accPol },
+                vaultProperties.NetworkAcls,
+                tags);
+
+            // Delete
+            await VaultsClient.DeleteAsync(
+                resourceGroupName: rgName,
+                vaultName: vaultName);
+
+            Assert.ThrowsAsync<RequestFailedException>(async () =>
+            {
+                await VaultsClient.GetAsync(
+                    resourceGroupName: rgName,
+                    vaultName: vaultName);
+            });
+        }
+
+        [Test]
         public async Task CreateKeyVaultDisableSoftDelete()
         {
             this.accPol.ApplicationId = Guid.Parse(this.applicationId);
@@ -47,6 +150,319 @@ namespace Azure.Management.KeyVault.Tests
             var vaultValue = await vault.WaitForCompletionAsync();
 
             Assert.False(vaultValue.Value.Properties.EnableSoftDelete);
+        }
+
+        [Test]
+        public async Task KeyVaultManagementVaultTestCompoundIdentityAccessControlPolicy()
+        {
+            accPol.ApplicationId = Guid.Parse(applicationId);
+            vaultProperties.EnableSoftDelete = null;
+
+            var parameters = new VaultCreateOrUpdateParameters(location, vaultProperties);
+            parameters.Tags = tags;
+
+            var createVault = await VaultsClient.StartCreateOrUpdateAsync(
+                resourceGroupName: rgName,
+                vaultName: vaultName,
+                parameters: parameters
+                );
+            var vaultResponse = await createVault.WaitForCompletionAsync();
+
+            ValidateVault(vaultResponse.Value,
+                vaultName,
+                rgName,
+                subscriptionId,
+                tenantIdGuid,
+                location,
+                "A",
+                SkuName.Standard,
+                true,
+                true,
+                true,
+                true,
+                new[] { accPol },
+                tags);
+
+            // Get
+            var retrievedVault = await VaultsClient.GetAsync(
+               resourceGroupName: rgName,
+               vaultName: vaultName);
+
+            ValidateVault(retrievedVault.Value,
+                vaultName,
+                rgName,
+                subscriptionId,
+                tenantIdGuid,
+                location,
+                "A",
+                SkuName.Standard,
+                true,
+                true,
+                true,
+                true,
+                new[] { accPol },
+                tags);
+
+
+            // Delete
+            await VaultsClient.DeleteAsync(
+                resourceGroupName: rgName,
+                vaultName: vaultName);
+
+            Assert.ThrowsAsync<RequestFailedException>(async () =>
+            {
+                await VaultsClient.GetAsync(
+                    resourceGroupName: rgName,
+                    vaultName: vaultName);
+            });
+        }
+
+        [Test]
+        public async Task KeyVaultManagementListVaults()
+        {
+            int n = 3;
+            int top = 2;
+            vaultProperties.EnableSoftDelete = null;
+
+            List<string> resourceIds = new List<string>();
+            List<string> vaultNameList = new List<string>();
+            for (int i = 0; i < n; i++)
+            {
+                string vaultName = Recording.GenerateAssetName("sdktestvault");
+                var parameters = new VaultCreateOrUpdateParameters(location, vaultProperties);
+                parameters.Tags = tags;
+                var createdVault = await VaultsClient.StartCreateOrUpdateAsync(
+                    resourceGroupName: rgName,
+                    vaultName: vaultName,
+                    parameters: parameters
+                    );
+
+                var vaultResponse = await createdVault.WaitForCompletionAsync();
+                var vaultValue = vaultResponse.Value;
+
+                Assert.NotNull(vaultValue);
+                Assert.NotNull(vaultValue.Id);
+                resourceIds.Add(vaultValue.Id);
+                vaultNameList.Add(vaultValue.Name);
+            }
+
+            var vaults = VaultsClient.ListByResourceGroupAsync(rgName, top);
+
+            await foreach (var v in vaults)
+            {
+                Assert.True(resourceIds.Remove(v.Id));
+            }
+
+            Assert.True(resourceIds.Count == 0);
+
+            var allVaults = VaultsClient.ListAsync(top);
+            Assert.NotNull(vaults);
+
+            // Delete
+            foreach (var v in vaultNameList)
+            {
+                await VaultsClient.DeleteAsync(resourceGroupName: rgName, vaultName: v);
+            }
+        }
+
+        [Test]
+        public async Task KeyVaultManagementRecoverDeletedVault()
+        {
+            var parameters = new VaultCreateOrUpdateParameters(location, vaultProperties);
+            parameters.Tags = tags;
+            var createdVault = await VaultsClient.StartCreateOrUpdateAsync(
+                resourceGroupName: rgName,
+                vaultName: vaultName,
+                parameters: parameters
+                );
+
+            var vaultValue = await createdVault.WaitForCompletionAsync();
+
+            // Delete
+            await VaultsClient.DeleteAsync(
+                resourceGroupName: rgName,
+                vaultName: vaultName);
+
+            // Get deleted vault
+            Assert.ThrowsAsync<RequestFailedException>(async () =>
+            {
+                await VaultsClient.GetAsync(
+                    resourceGroupName: rgName,
+                    vaultName: vaultName);
+            });
+
+            parameters = new VaultCreateOrUpdateParameters(location, vaultProperties);
+            parameters.Tags = tags;
+            // Recover in default mode
+            var recoveredRawVault = await VaultsClient.StartCreateOrUpdateAsync(
+                resourceGroupName: rgName,
+                vaultName: vaultName,
+                parameters: parameters
+                );
+            var recoveredVault = await recoveredRawVault.WaitForCompletionAsync();
+            Assert.True(recoveredVault.Value.IsEqual(vaultValue.Value));
+
+            // Get recovered vault
+            await VaultsClient.GetAsync(
+                resourceGroupName: rgName,
+                vaultName: vaultName);
+
+            // Delete
+            await VaultsClient.DeleteAsync(
+                resourceGroupName: rgName,
+                vaultName: vaultName);
+
+            vaultProperties.CreateMode = CreateMode.Recover;
+            parameters = new VaultCreateOrUpdateParameters(location, vaultProperties);
+
+            // Recover in recover mode
+            var recoveredRawVault2 = await VaultsClient.StartCreateOrUpdateAsync(
+                resourceGroupName: rgName,
+                vaultName: vaultName,
+                parameters: parameters
+                );
+            var recoveredVault2 = await recoveredRawVault.WaitForCompletionAsync();
+
+            Assert.True(recoveredVault2.Value.IsEqual(vaultValue.Value));
+
+            // Get recovered vault
+            await VaultsClient.GetAsync(
+                resourceGroupName: rgName,
+                vaultName: vaultName);
+
+            // Delete
+            await VaultsClient.DeleteAsync(
+                resourceGroupName: rgName,
+                vaultName: vaultName);
+        }
+
+        [Test]
+        public async Task KeyVaultManagementListDeletedVaults()
+        {
+            int n = 3;
+            List<string> resourceIds = new List<string>();
+            List<string> vaultNameList = new List<string>();
+            var parameters = new VaultCreateOrUpdateParameters(location, vaultProperties)
+            {
+                Tags = tags
+            };
+            for (int i = 0; i < n; i++)
+            {
+                string vaultName = Recording.GenerateAssetName("sdktestvault");
+                var createdRawVault = await VaultsClient.StartCreateOrUpdateAsync(
+                    resourceGroupName: rgName,
+                    vaultName: vaultName,
+                    parameters: parameters
+                    );
+
+                var createdVault = (await createdRawVault.WaitForCompletionAsync()).Value;
+
+                Assert.NotNull(createdVault);
+                Assert.NotNull(createdVault.Id);
+                resourceIds.Add(createdVault.Id);
+                vaultNameList.Add(createdVault.Name);
+
+                await VaultsClient.DeleteAsync(resourceGroupName: rgName, vaultName: vaultName);
+
+                var deletedVault = await VaultsClient.GetDeletedAsync(vaultName, location);
+                deletedVault.Value.IsEqual(createdVault);
+            }
+
+            var deletedVaults = VaultsClient.ListDeletedAsync();
+            Assert.NotNull(deletedVaults);
+
+            await foreach (var v in deletedVaults)
+            {
+                var exists = resourceIds.Remove(v.Properties.VaultId);
+
+                if (exists)
+                {
+                    // Purge vault
+                    var purgeOperation = await VaultsClient.StartPurgeDeletedAsync(v.Name, location);
+                    await purgeOperation.WaitForCompletionAsync();
+                    Assert.ThrowsAsync<RequestFailedException>(async () => await VaultsClient.GetDeletedAsync(v.Name, location));
+                }
+                if (resourceIds.Count == 0)
+                    break;
+            }
+
+            Assert.True(resourceIds.Count == 0);
+        }
+
+        private void ValidateVault(
+            Vault vault,
+            string expectedVaultName,
+            string expectedResourceGroupName,
+            string expectedSubId,
+            Guid expectedTenantId,
+            string expectedLocation,
+            string expectedSkuFamily,
+            SkuName expectedSku,
+            bool expectedEnabledForDeployment,
+            bool expectedEnabledForTemplateDeployment,
+            bool expectedEnabledForDiskEncryption,
+            bool? expectedEnableSoftDelete,
+            AccessPolicyEntry[] expectedPolicies,
+            Dictionary<string, string> expectedTags)
+        {
+            Assert.NotNull(vault);
+            Assert.NotNull(vault.Properties);
+
+            string resourceIdFormat = "/subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.KeyVault/vaults/{2}";
+            string expectedResourceId = string.Format(resourceIdFormat, expectedSubId, expectedResourceGroupName, expectedVaultName);
+
+            Assert.AreEqual(expectedResourceId, vault.Id);
+            Assert.AreEqual(expectedLocation, vault.Location);
+            Assert.AreEqual(expectedTenantId, vault.Properties.TenantId);
+            Assert.AreEqual(expectedSku, vault.Properties.Sku.Name);
+            Assert.AreEqual(expectedVaultName, vault.Name);
+            Assert.AreEqual(expectedEnabledForDeployment, vault.Properties.EnabledForDeployment);
+            Assert.AreEqual(expectedEnabledForTemplateDeployment, vault.Properties.EnabledForTemplateDeployment);
+            Assert.AreEqual(expectedEnabledForDiskEncryption, vault.Properties.EnabledForDiskEncryption);
+            Assert.AreEqual(expectedEnableSoftDelete, vault.Properties.EnableSoftDelete);
+            Assert.True(expectedTags.DictionaryEqual(vault.Tags));
+            Assert.True(expectedPolicies.IsEqual(vault.Properties.AccessPolicies));
+        }
+
+        private void ValidateVault(
+            Vault vault,
+            string expectedVaultName,
+            string expectedResourceGroupName,
+            string expectedSubId,
+            Guid expectedTenantId,
+            string expectedLocation,
+            string expectedSkuFamily,
+            SkuName expectedSku,
+            bool expectedEnabledForDeployment,
+            bool expectedEnabledForTemplateDeployment,
+            bool expectedEnabledForDiskEncryption,
+            bool? expectedEnableSoftDelete,
+            AccessPolicyEntry[] expectedPolicies,
+            NetworkRuleSet networkRuleSet,
+            Dictionary<string, string> expectedTags)
+        {
+            ValidateVault(
+                vault,
+                expectedVaultName,
+                expectedResourceGroupName,
+                expectedSubId,
+                expectedTenantId,
+                expectedLocation,
+                expectedSkuFamily,
+                expectedSku,
+                expectedEnabledForDeployment,
+                expectedEnabledForTemplateDeployment,
+                expectedEnabledForDiskEncryption,
+                expectedEnableSoftDelete,
+                expectedPolicies,
+                expectedTags);
+
+            Assert.NotNull(vault.Properties.NetworkAcls);
+            Assert.AreEqual(networkRuleSet.DefaultAction, vault.Properties.NetworkAcls.DefaultAction);
+            Assert.AreEqual(networkRuleSet.Bypass, vault.Properties.NetworkAcls.Bypass);
+            Assert.True(vault.Properties.NetworkAcls.IpRules != null && vault.Properties.NetworkAcls.IpRules.Count == 2);
+            Assert.AreEqual(networkRuleSet.IpRules[0].Value, vault.Properties.NetworkAcls.IpRules[0].Value);
+            Assert.AreEqual(networkRuleSet.IpRules[1].Value, vault.Properties.NetworkAcls.IpRules[1].Value);
         }
 
     }

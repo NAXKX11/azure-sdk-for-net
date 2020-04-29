@@ -19,6 +19,7 @@ namespace Azure.Management.KeyVault
         {
             /// <summary> Service version "2019-09-01". </summary>
             V2019_09_01 = 1,
+
         }
         internal string Version { get; }
         /// <summary> Initializes new instance of KeyVaultManagementClientOptions. </summary>
