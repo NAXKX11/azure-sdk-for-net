@@ -31,7 +31,9 @@ namespace Azure.Graph.Rbac
         {
             options = options ?? new RbacManagementClientOptions();
             _clientDiagnostics = new ClientDiagnostics(options);
-            _pipeline = ManagementPipelineBuilder.Build(tokenCredential, options);
+            //_pipeline = ManagementPipelineBuilder.Build(tokenCredential, options);
+            var policy = new BearerTokenAuthenticationPolicy(tokenCredential, "https://graph.windows.net//.default");
+            _pipeline = HttpPipelineBuilder.Build(options, policy);
             RestClient = new ServicePrincipalsRestClient(_clientDiagnostics, _pipeline, tenantID, apiVersion: options.Version);
         }
 
