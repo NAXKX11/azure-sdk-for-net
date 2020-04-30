@@ -9,6 +9,7 @@ namespace Azure.Management.KeyVault.Tests
     {
         private const string TenantIdKey = "TenantId";
         private const string SubIdKey = "SubId";
+        private const string ApplicationIdKey = "ApplicationId";
 
         public KeyVaultManagementTestEnvironment() : base("keyvalutmgmt")
         {
@@ -20,5 +21,7 @@ namespace Azure.Management.KeyVault.Tests
         public string TenantIdTrack1 => GetRecordedVariable(TenantIdKey);
 
         public string SubscriptionIdTrack1 => GetRecordedVariable(SubIdKey);
+
+        public string ApplicationIdTrack1 => GetRecordedVariable(ApplicationIdKey);
     }
 }

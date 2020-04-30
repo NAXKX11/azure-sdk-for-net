@@ -12,6 +12,7 @@ using Azure.Identity;
 using Azure.Management.KeyVault.Models;
 using Azure.Management.Resource;
 using NUnit.Framework;
+using NUnit.Framework.Internal;
 
 namespace Azure.Management.KeyVault.Tests
 {
@@ -41,6 +42,7 @@ namespace Azure.Management.KeyVault.Tests
 
         public VaultsClient VaultsClient { get; set; }
         public ResourcesClient ResourcesClient { get; set; }
+        public ResourceGroupsClient ResourceGroupsClient { get; set; }
         public UsersClient GraphUsersClient { get; set; }
         public ProvidersClient ResourceProvidersClient { get; set; }
 
@@ -57,17 +59,18 @@ namespace Azure.Management.KeyVault.Tests
             {
                 this.tenantId = TestEnvironment.TenantIdTrack1;
                 this.subscriptionId = TestEnvironment.SubscriptionIdTrack1;
+                this.applicationId = TestEnvironment.ApplicationIdTrack1;
             }
             else
             {
                 this.tenantId = TestEnvironment.TenantId;
                 this.subscriptionId = TestEnvironment.SubscriptionId;
+                this.applicationId = TestEnvironment.ClientId;
             }
-            this.applicationId = Recording.GetVariable(ApplicationIdKey, Guid.NewGuid().ToString()); ;
 
             VaultsClient = GetVaultsClient();
             ResourcesClient = GetResourcesClient();
-            GraphUsersClient = GetGraphUsersClient();
+            ResourceGroupsClient = GetResourceGroupsClient();
             ResourceProvidersClient = GetResourceProvidersClient();
 
             if (Mode == RecordedTestMode.Playback)
@@ -76,17 +79,27 @@ namespace Azure.Management.KeyVault.Tests
             }
             else if (Mode == RecordedTestMode.Record)
             {
-                //TODO: verify in record mode; seems graph request is not in records, why?
-                var userName = TestEnvironment.UserName;
-                this.objectId = (await GraphUsersClient.GetAsync(userName)).Value.ObjectId;
-
-                ServicePrincipalsClient client;
-                var = client.ListAsync($"appId eq {this.ClientId}");
-                var odataQuery = new ODataQuery<ServicePrincipal>(sp => sp.AppId == acsServicePrincipal.SpId);
-                var servicePrincipal = GraphClient.ServicePrincipals.List(odataQuery).First();
+                var spClient = new ServicePrincipalsClient(this.tenantId, TestEnvironment.Credential);
+                var servicePrincipalList = spClient.ListAsync($"appId eq '{this.applicationId}'");
+                await foreach (var servicePrincipal in servicePrincipalList)
+                {
+                    this.objectId = servicePrincipal.ObjectId;
+                    break;
+                }
             }
+            var provider = (await ResourceProvidersClient.GetAsync("Microsoft.KeyVault")).Value;
+            this.location = provider.ResourceTypes.Where(
+                (resType) =>
+                {
+                    if (resType.ResourceType == "vaults")
+                        return true;
+                    else
+                        return false;
+                }
+                ).First().Locations.FirstOrDefault();
 
             rgName = Recording.GenerateAssetName("sdktestrg");
+            await ResourceGroupsClient.CreateOrUpdateAsync(rgName, new Resource.Models.ResourceGroup(location));
             vaultName = Recording.GenerateAssetName("sdktestvault");
 
             tenantIdGuid = new Guid(tenantId);
@@ -116,17 +129,6 @@ namespace Azure.Management.KeyVault.Tests
             vaultProperties.VaultUri = "";
             vaultProperties.NetworkAcls = new NetworkRuleSet() { Bypass = "AzureServices", DefaultAction = "Allow", IpRules = ipRules, VirtualNetworkRules = null };
             vaultProperties.AccessPolicies = new[] { accPol };
-
-            var provider = (await ResourceProvidersClient.GetAsync("Microsoft.KeyVault")).Value;
-            this.location = provider.ResourceTypes.Where(
-                (resType) =>
-                {
-                    if (resType.ResourceType == "vaults")
-                        return true;
-                    else
-                        return false;
-                }
-                ).First().Locations.FirstOrDefault();
         }
 
         internal VaultsClient GetVaultsClient(TestRecording recording = null)
@@ -161,6 +163,15 @@ namespace Azure.Management.KeyVault.Tests
             recording = recording ?? Recording;
 
             return InstrumentClient(new ProvidersClient(this.subscriptionId,
+                TestEnvironment.Credential,
+                recording.InstrumentClientOptions(new ResourceManagementClientOptions())));
+        }
+
+        internal ResourceGroupsClient GetResourceGroupsClient(TestRecording recording = null)
+        {
+            recording = recording ?? Recording;
+
+            return InstrumentClient(new ResourceGroupsClient(this.subscriptionId,
                 TestEnvironment.Credential,
                 recording.InstrumentClientOptions(new ResourceManagementClientOptions())));
         }

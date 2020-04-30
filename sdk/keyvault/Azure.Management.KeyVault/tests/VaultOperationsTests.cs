@@ -100,6 +100,7 @@ namespace Azure.Management.KeyVault.Tests
                 vaultProperties.NetworkAcls,
                 tags);
 
+            //VaultsClient.Get()
             var rawRetrievedVault = await VaultsClient.GetAsync(
                 resourceGroupName: rgName,
                 vaultName: vaultName);
@@ -135,6 +136,7 @@ namespace Azure.Management.KeyVault.Tests
         }
 
         [Test]
+        [AsyncOnly]
         public async Task CreateKeyVaultDisableSoftDelete()
         {
             this.accPol.ApplicationId = Guid.Parse(this.applicationId);
@@ -150,6 +152,8 @@ namespace Azure.Management.KeyVault.Tests
             var vaultValue = await vault.WaitForCompletionAsync();
 
             Assert.False(vaultValue.Value.Properties.EnableSoftDelete);
+
+            await VaultsClient.DeleteAsync(rgName, vaultName);
         }
 
         [Test]
