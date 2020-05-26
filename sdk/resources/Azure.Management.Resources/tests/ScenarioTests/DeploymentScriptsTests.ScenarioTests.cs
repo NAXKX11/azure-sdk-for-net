@@ -12,6 +12,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Azure.Core;
 using Azure.Core.TestFramework;
 using Azure.Management.Resources;
 using Azure.Management.Resources.Models;
@@ -54,18 +55,24 @@ namespace ResourceGroups.Tests
             var templateString = File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "ScenarioTests", "simple-storage-account.json"));
             var parameterString = File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "ScenarioTests", "simple-storage-account-parameters.json"));
 
-            var parameter = JsonSerializer.Deserialize<Dictionary<string, object>>(parameterString);
-            if (parameter.ContainsKey("parameters"))
+            JsonElement jsonTemplate = JsonSerializer.Deserialize<JsonElement>(templateString);
+            JsonElement jsonParameter = JsonSerializer.Deserialize<JsonElement>(parameterString);
+
+            object template = jsonTemplate.GetObject();
+
+            var parameterDictionary = jsonParameter.GetObject() as IDictionary<string, object>;
+            object parameter = parameterDictionary;
+            if (parameterDictionary.ContainsKey("parameters"))
             {
-                parameterString = JsonSerializer.Serialize(parameter["parameters"]);
+                parameter = parameterDictionary["parameters"];
             }
 
             var parameters = new Deployment
             (
                 new DeploymentProperties(DeploymentMode.Incremental)
                 {
-                    Template = templateString,
-                    Parameters = parameterString
+                    Template = template,
+                    Parameters = parameter
                 }
             );
 
