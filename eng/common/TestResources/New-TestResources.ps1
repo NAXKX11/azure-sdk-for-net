@@ -5,8 +5,7 @@
 
 #Requires -Version 6.0
 #Requires -PSEdition Core
-#Requires -Modules @{ModuleName='Az.Accounts'; ModuleVersion='1.6.4'}
-#Requires -Modules @{ModuleName='Az.Resources'; ModuleVersion='1.8.0'}
+
 
 [CmdletBinding(DefaultParameterSetName = 'Default', SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
 param (
@@ -26,7 +25,6 @@ param (
     [string] $TestApplicationSecret,
 
     [Parameter()]
-    [ValidatePattern('^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$')]
     [string] $TestApplicationOid,
 
     [Parameter(ParameterSetName = 'Provisioner', Mandatory = $true)]
@@ -52,7 +50,6 @@ param (
     [string] $Location = '',
 
     [Parameter()]
-    [ValidateSet('AzureCloud', 'AzureUSGovernment', 'AzureChinaCloud')]
     [string] $Environment = 'AzureCloud',
 
     [Parameter()]
@@ -331,7 +328,7 @@ foreach ($templateFile in $templateFiles) {
     }
     else
     {
-        
+
         if (!$CI) {
             # Write an extra new line to isolate the environment variables for easy reading.
             Log "Persist the following environment variables based on your detected shell ($shell):`n"

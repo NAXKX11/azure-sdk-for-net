@@ -38,7 +38,9 @@ namespace SmokeTest
             Console.WriteLine("3.- Delete that Secret (Clean up)\n");
 
             string keyVaultUri = Environment.GetEnvironmentVariable("KEY_VAULT_URI");
-            var authorityHost = GetAuthorityHost(Environment.GetEnvironmentVariable("AZURE_CLOUD"), KnownAuthorityHosts.AzureCloud);
+            var authorityHost = GetAuthorityHost(
+                Environment.GetEnvironmentVariable("AZURE_CLOUD"),
+                new Uri(Environment.GetEnvironmentVariable("AZURE_AUTHORITY_HOST")));
 
             var defaultAzureCredentialOptions = new DefaultAzureCredentialOptions 
             {
