@@ -9,7 +9,6 @@ using System.Reflection;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure.Identity;
 
 namespace Azure.Core.TestFramework
 {
@@ -137,8 +136,7 @@ namespace Azure.Core.TestFramework
                         type,
                         GetVariable("TENANT_ID"),
                         GetVariable("CLIENT_ID"),
-                        GetVariable("CLIENT_SECRET"),
-                        new TokenCredentialOptions {  AuthorityHost = new Uri(GetVariable("AZURE_AUTHORITY_HOST")) }
+                        GetVariable("CLIENT_SECRET")
                     );
                 }
 
