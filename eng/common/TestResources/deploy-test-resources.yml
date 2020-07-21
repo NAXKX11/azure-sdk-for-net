@@ -19,7 +19,7 @@ parameters:
 
 steps:
   # New-TestResources command requires Az module
-  - pwsh: Install-Module -Name Az -Scope CurrentUser -AllowClobber -Force -Verbose
+  - pwsh: Install-Module -Name Az -Scope CurrentUser -AllowClobber -RequiredVersion 3.7.0 -Force -Verbose
     displayName: Install Azure PowerShell module
 
   - pwsh: |
