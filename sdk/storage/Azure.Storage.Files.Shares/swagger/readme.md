@@ -708,16 +708,15 @@ directive:
   transform: >
     $["x-ms-client-name"] = "ShareAccessPolicy";
     $.xml = {"name": "AccessPolicy"};
-    $.properties.StartsOn = $.properties.Start;
-    $.properties.StartsOn.xml = { "name": "Start"};
+    $.properties.PolicyStartsOn = $.properties.Start;
+    $.properties.PolicyStartsOn.xml = { "name": "Start"};
     delete $.properties.Start;
-    $.properties.ExpiresOn = $.properties.Expiry;
-    $.properties.ExpiresOn.xml = { "name": "Expiry"};
+    $.properties.PolicyExpiresOn = $.properties.Expiry;
+    $.properties.PolicyExpiresOn.xml = { "name": "Expiry"};
     delete $.properties.Expiry;
     $.properties.Permissions = $.properties.Permission;
     $.properties.Permissions.xml = { "name": "Permission"};
     delete $.properties.Permission;
-    $.required = ["StartsOn", "ExpiresOn", "Permissions"];
 ```
 
 ### ShareQuota properties renaming
@@ -857,6 +856,25 @@ directive:
   where: $["x-ms-paths"]["/{shareName}?restype=share&comp=undelete"]
   transform: >
     $.put.responses["201"]["x-az-response-name"] = "ShareInfo";
+```
+
+### Rename ShareItem fields
+``` yaml
+directive:
+- from: swagger-document
+  where: $.definitions
+  transform: >
+    $.ShareItem.properties.Deleted["x-ms-client-name"] = "IsDeleted";
+    $.ShareItem.properties.Version["x-ms-client-name"] = "VersionId";
+```
+
+### Rename ShareProperties fields
+``` yaml
+directive:
+- from: swagger-document
+  where: $.definitions
+  transform: >
+    $.ShareProperties.properties.DeletedTime["x-ms-client-name"] = "DeletedOn";
 ```
 
 ### Treat the API version as a parameter instead of a constant

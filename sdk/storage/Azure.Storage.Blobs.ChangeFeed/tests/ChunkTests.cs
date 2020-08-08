@@ -7,7 +7,6 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure.Storage.Blobs.ChangeFeed.Models;
 using Azure.Storage.Blobs.Models;
 using Azure.Storage.Internal.Avro;
 using Moq;
@@ -135,7 +134,7 @@ namespace Azure.Storage.Blobs.ChangeFeed.Tests
             long dataVersion = 1;
             string metadataVersion = "1";
 
-            string api = "CreateBlob";
+            string api = "PutBlob";
             Guid clientRequestId = Guid.NewGuid();
             Guid requestId = Guid.NewGuid();
             ETag etag = new ETag("0x8D75EF45A3B8617");
@@ -156,7 +155,7 @@ namespace Azure.Storage.Blobs.ChangeFeed.Tests
                 { Constants.ChangeFeed.Event.EventType, eventType },
                 { Constants.ChangeFeed.Event.EventTime, eventTime.ToString() },
                 { Constants.ChangeFeed.Event.EventId, eventId.ToString() },
-                { Constants.ChangeFeed.Event.DataVersion, dataVersion },
+                { Constants.ChangeFeed.Event.SchemaVersion, dataVersion },
                 { Constants.ChangeFeed.Event.MetadataVersion, metadataVersion },
                 { Constants.ChangeFeed.Event.Data, new Dictionary<string, object>
                     {
@@ -224,10 +223,10 @@ namespace Azure.Storage.Blobs.ChangeFeed.Tests
             Assert.AreEqual(BlobChangeFeedEventType.BlobCreated, changeFeedEvent.EventType);
             Assert.AreEqual(eventTime, changeFeedEvent.EventTime);
             Assert.AreEqual(eventId, changeFeedEvent.Id);
-            Assert.AreEqual(dataVersion, changeFeedEvent.DataVersion);
+            Assert.AreEqual(dataVersion, changeFeedEvent.SchemaVersion);
             Assert.AreEqual(metadataVersion, changeFeedEvent.MetadataVersion);
 
-            Assert.AreEqual(api, changeFeedEvent.EventData.Api);
+            Assert.AreEqual(BlobOperationName.PutBlob, changeFeedEvent.EventData.BlobOperationName);
             Assert.AreEqual(clientRequestId, changeFeedEvent.EventData.ClientRequestId);
             Assert.AreEqual(requestId, changeFeedEvent.EventData.RequestId);
             Assert.AreEqual(etag, changeFeedEvent.EventData.ETag);
