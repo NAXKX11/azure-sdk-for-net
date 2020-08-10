@@ -1,5 +1,10 @@
 namespace Azure.Storage.Blobs.ChangeFeed
 {
+    public partial class BlobChangeFeedAsyncPagable : Azure.AsyncPageable<Azure.Storage.Blobs.ChangeFeed.BlobChangeFeedEvent>
+    {
+        internal BlobChangeFeedAsyncPagable() { }
+        public override System.Collections.Generic.IAsyncEnumerable<Azure.Page<Azure.Storage.Blobs.ChangeFeed.BlobChangeFeedEvent>> AsPages(string continuationToken = null, int? pageSizeHint = default(int?)) { throw null; }
+    }
     public partial class BlobChangeFeedClient
     {
         protected BlobChangeFeedClient() { }
@@ -77,6 +82,11 @@ namespace Azure.Storage.Blobs.ChangeFeed
     {
         public static Azure.Storage.Blobs.ChangeFeed.BlobChangeFeedEvent BlobChangeFeedEvent(string topic, string subject, Azure.Storage.Blobs.ChangeFeed.BlobChangeFeedEventType eventType, System.DateTimeOffset eventTime, System.Guid id, Azure.Storage.Blobs.ChangeFeed.BlobChangeFeedEventData eventData, long dataVersion, string metadataVersion) { throw null; }
         public static Azure.Storage.Blobs.ChangeFeed.BlobChangeFeedEventData BlobChangeFeedEventData(string api, System.Guid clientRequestId, System.Guid requestId, Azure.ETag eTag, string contentType, long contentLength, Azure.Storage.Blobs.Models.BlobType blobType, long contentOffset, System.Uri destinationUri, System.Uri sourceUri, System.Uri uri, bool recursive, string sequencer) { throw null; }
+    }
+    public partial class BlobChangeFeedPagable : Azure.Pageable<Azure.Storage.Blobs.ChangeFeed.BlobChangeFeedEvent>
+    {
+        internal BlobChangeFeedPagable() { }
+        public override System.Collections.Generic.IEnumerable<Azure.Page<Azure.Storage.Blobs.ChangeFeed.BlobChangeFeedEvent>> AsPages(string continuationToken = null, int? pageSizeHint = default(int?)) { throw null; }
     }
     [System.Runtime.InteropServices.StructLayoutAttribute(System.Runtime.InteropServices.LayoutKind.Sequential)]
     public readonly partial struct BlobOperationName : System.IEquatable<Azure.Storage.Blobs.ChangeFeed.BlobOperationName>

@@ -536,6 +536,11 @@ namespace Azure.Storage.Blobs.Models
         public static bool operator !=(Azure.Storage.Blobs.Models.BlobErrorCode left, Azure.Storage.Blobs.Models.BlobErrorCode right) { throw null; }
         public override string ToString() { throw null; }
     }
+    public enum BlobExpirationOffset
+    {
+        CreationTime = 0,
+        Now = 1,
+    }
     public partial class BlobGeoReplication
     {
         internal BlobGeoReplication() { }
@@ -699,6 +704,14 @@ namespace Azure.Storage.Blobs.Models
         public long TagCount { get { throw null; } }
         public string VersionId { get { throw null; } }
     }
+    public partial class BlobQueryCsvTextConfiguration : Azure.Storage.Blobs.Models.BlobQueryTextConfiguration
+    {
+        public BlobQueryCsvTextConfiguration() { }
+        public string ColumnSeparator { get { throw null; } set { } }
+        public char? EscapeCharacter { get { throw null; } set { } }
+        public char? FieldQuote { get { throw null; } set { } }
+        public bool HasHeaders { get { throw null; } set { } }
+    }
     public partial class BlobQueryCsvTextOptions : Azure.Storage.Blobs.Models.BlobQueryTextOptions
     {
         public BlobQueryCsvTextOptions() { }
@@ -715,6 +728,10 @@ namespace Azure.Storage.Blobs.Models
         public string Name { get { throw null; } }
         public long Position { get { throw null; } }
     }
+    public partial class BlobQueryJsonTextConfiguration : Azure.Storage.Blobs.Models.BlobQueryTextConfiguration
+    {
+        public BlobQueryJsonTextConfiguration() { }
+    }
     public partial class BlobQueryJsonTextOptions : Azure.Storage.Blobs.Models.BlobQueryTextOptions
     {
         public BlobQueryJsonTextOptions() { }
@@ -727,6 +744,11 @@ namespace Azure.Storage.Blobs.Models
         public Azure.Storage.Blobs.Models.BlobQueryTextOptions OutputTextConfiguration { get { throw null; } set { } }
         public System.IProgress<long> ProgressHandler { get { throw null; } set { } }
         public event System.Action<Azure.Storage.Blobs.Models.BlobQueryError> ErrorHandler { add { } remove { } }
+    }
+    public abstract partial class BlobQueryTextConfiguration
+    {
+        protected BlobQueryTextConfiguration() { }
+        public string RecordSeparator { get { throw null; } set { } }
     }
     public abstract partial class BlobQueryTextOptions
     {
@@ -746,6 +768,15 @@ namespace Azure.Storage.Blobs.Models
         public BlobRetentionPolicy() { }
         public int? Days { get { throw null; } set { } }
         public bool Enabled { get { throw null; } set { } }
+    }
+    public partial class BlobScheduleDeletionOptions
+    {
+        public BlobScheduleDeletionOptions() { }
+        public BlobScheduleDeletionOptions(System.DateTimeOffset? expiresOn) { }
+        public BlobScheduleDeletionOptions(System.TimeSpan timeToExpire, Azure.Storage.Blobs.Models.BlobExpirationOffset setRelativeTo) { }
+        public System.DateTimeOffset? ExpiresOn { get { throw null; } }
+        public Azure.Storage.Blobs.Models.BlobExpirationOffset? SetExpiryRelativeTo { get { throw null; } }
+        public System.TimeSpan? TimeToExpire { get { throw null; } }
     }
     public partial class BlobServiceProperties
     {
@@ -948,6 +979,23 @@ namespace Azure.Storage.Blobs.Models
         Aborted = 2,
         Failed = 3,
     }
+    public partial class CreateAppendBlobOptions
+    {
+        public CreateAppendBlobOptions() { }
+        public Azure.Storage.Blobs.Models.AppendBlobRequestConditions Conditions { get { throw null; } set { } }
+        public Azure.Storage.Blobs.Models.BlobHttpHeaders HttpHeaders { get { throw null; } set { } }
+        public System.Collections.Generic.IDictionary<string, string> Metadata { get { throw null; } set { } }
+        public System.Collections.Generic.IDictionary<string, string> Tags { get { throw null; } set { } }
+    }
+    public partial class CreatePageBlobOptions
+    {
+        public CreatePageBlobOptions() { }
+        public Azure.Storage.Blobs.Models.PageBlobRequestConditions Conditions { get { throw null; } set { } }
+        public Azure.Storage.Blobs.Models.BlobHttpHeaders HttpHeaders { get { throw null; } set { } }
+        public System.Collections.Generic.IDictionary<string, string> Metadata { get { throw null; } set { } }
+        public long? SequenceNumber { get { throw null; } set { } }
+        public System.Collections.Generic.IDictionary<string, string> Tags { get { throw null; } set { } }
+    }
     [System.Runtime.InteropServices.StructLayoutAttribute(System.Runtime.InteropServices.LayoutKind.Sequential)]
     public readonly partial struct CustomerProvidedKey : System.IEquatable<Azure.Storage.Blobs.Models.CustomerProvidedKey>
     {
@@ -1111,6 +1159,17 @@ namespace Azure.Storage.Blobs.Models
         public override int GetHashCode() { throw null; }
         public static bool operator ==(Azure.Storage.Blobs.Models.TaggedBlobItem left, Azure.Storage.Blobs.Models.TaggedBlobItem right) { throw null; }
         public static bool operator !=(Azure.Storage.Blobs.Models.TaggedBlobItem left, Azure.Storage.Blobs.Models.TaggedBlobItem right) { throw null; }
+    }
+    public partial class UploadBlobOptions
+    {
+        public UploadBlobOptions() { }
+        public Azure.Storage.Blobs.Models.AccessTier? AccessTier { get { throw null; } set { } }
+        public Azure.Storage.Blobs.Models.BlobRequestConditions Conditions { get { throw null; } set { } }
+        public Azure.Storage.Blobs.Models.BlobHttpHeaders HttpHeaders { get { throw null; } set { } }
+        public System.Collections.Generic.IDictionary<string, string> Metadata { get { throw null; } set { } }
+        public System.IProgress<long> ProgressHandler { get { throw null; } set { } }
+        public System.Collections.Generic.IDictionary<string, string> Tags { get { throw null; } set { } }
+        public Azure.Storage.StorageTransferOptions TransferOptions { get { throw null; } set { } }
     }
     public partial class UserDelegationKey
     {

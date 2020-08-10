@@ -363,15 +363,6 @@ namespace Azure.Storage.Files.DataLake.Models
         CreationTime = 0,
         Now = 1,
     }
-    public partial class DataLakeFileScheduleDeletionOptions
-    {
-        public DataLakeFileScheduleDeletionOptions() { }
-        public DataLakeFileScheduleDeletionOptions(System.DateTimeOffset? expiresOn) { }
-        public DataLakeFileScheduleDeletionOptions(System.TimeSpan timeToExpire, Azure.Storage.Files.DataLake.Models.DataLakeFileExpirationOffset setRelativeTo) { }
-        public System.DateTimeOffset? ExpiresOn { get { throw null; } }
-        public Azure.Storage.Files.DataLake.Models.DataLakeFileExpirationOffset? SetExpiryRelativeTo { get { throw null; } }
-        public System.TimeSpan? TimeToExpire { get { throw null; } }
-    }
     public partial class DataLakeFileUploadOptions
     {
         public DataLakeFileUploadOptions() { }
@@ -432,6 +423,14 @@ namespace Azure.Storage.Files.DataLake.Models
         public static Azure.Storage.Files.DataLake.Models.PathProperties PathProperties(System.DateTimeOffset lastModified, System.DateTimeOffset creationTime, System.Collections.Generic.IDictionary<string, string> metadata, System.DateTimeOffset copyCompletionTime, string copyStatusDescription, string copyId, string copyProgress, System.Uri copySource, Azure.Storage.Files.DataLake.Models.CopyStatus copyStatus, bool isIncrementalCopy, Azure.Storage.Files.DataLake.Models.DataLakeLeaseDuration leaseDuration, Azure.Storage.Files.DataLake.Models.DataLakeLeaseState leaseState, Azure.Storage.Files.DataLake.Models.DataLakeLeaseStatus leaseStatus, long contentLength, string contentType, Azure.ETag eTag, byte[] contentHash, string contentEncoding, string contentDisposition, string contentLanguage, string cacheControl, string acceptRanges, bool isServerEncrypted, string encryptionKeySha256, string accessTier, string archiveStatus, System.DateTimeOffset accessTierChangeTime, bool isDirectory) { throw null; }
         public static Azure.Storage.Files.DataLake.Models.UserDelegationKey UserDelegationKey(string signedObjectId, string signedTenantId, System.DateTimeOffset signedStart, System.DateTimeOffset signedExpiry, string signedService, string signedVersion, string value) { throw null; }
     }
+    public partial class DataLakeQueryCsvTextConfiguration : Azure.Storage.Files.DataLake.Models.DataLakeQueryTextConfiguration
+    {
+        public DataLakeQueryCsvTextConfiguration() { }
+        public string ColumnSeparator { get { throw null; } set { } }
+        public char? EscapeCharacter { get { throw null; } set { } }
+        public char? FieldQuote { get { throw null; } set { } }
+        public bool HasHeaders { get { throw null; } set { } }
+    }
     public partial class DataLakeQueryCsvTextOptions : Azure.Storage.Files.DataLake.Models.DataLakeQueryTextOptions
     {
         public DataLakeQueryCsvTextOptions() { }
@@ -448,23 +447,20 @@ namespace Azure.Storage.Files.DataLake.Models
         public string Name { get { throw null; } }
         public long Position { get { throw null; } }
     }
-<<<<<<< HEAD
     public partial class DataLakeQueryJsonTextConfiguration : Azure.Storage.Files.DataLake.Models.DataLakeQueryTextConfiguration
     {
         public DataLakeQueryJsonTextConfiguration() { }
-=======
+    }
     public partial class DataLakeQueryJsonTextOptions : Azure.Storage.Files.DataLake.Models.DataLakeQueryTextOptions
     {
         public DataLakeQueryJsonTextOptions() { }
->>>>>>> master
     }
     public partial class DataLakeQueryOptions
     {
         public DataLakeQueryOptions() { }
         public Azure.Storage.Files.DataLake.Models.DataLakeRequestConditions Conditions { get { throw null; } set { } }
-<<<<<<< HEAD
-        public Azure.Storage.Files.DataLake.Models.DataLakeQueryTextConfiguration InputTextConfiguration { get { throw null; } set { } }
-        public Azure.Storage.Files.DataLake.Models.DataLakeQueryTextConfiguration OutputTextConfiguration { get { throw null; } set { } }
+        public Azure.Storage.Files.DataLake.Models.DataLakeQueryTextOptions InputTextConfiguration { get { throw null; } set { } }
+        public Azure.Storage.Files.DataLake.Models.DataLakeQueryTextOptions OutputTextConfiguration { get { throw null; } set { } }
         public System.IProgress<long> ProgressHandler { get { throw null; } set { } }
         public event System.Action<Azure.Storage.Files.DataLake.Models.DataLakeQueryError> ErrorHandler { add { } remove { } }
     }
@@ -472,11 +468,6 @@ namespace Azure.Storage.Files.DataLake.Models
     {
         protected DataLakeQueryTextConfiguration() { }
         public string RecordSeparator { get { throw null; } set { } }
-=======
-        public Azure.Storage.Files.DataLake.Models.DataLakeQueryTextOptions InputTextConfiguration { get { throw null; } set { } }
-        public Azure.Storage.Files.DataLake.Models.DataLakeQueryTextOptions OutputTextConfiguration { get { throw null; } set { } }
-        public System.IProgress<long> ProgressHandler { get { throw null; } set { } }
-        public event System.Action<Azure.Storage.Files.DataLake.Models.DataLakeQueryError> ErrorHandler { add { } remove { } }
     }
     public abstract partial class DataLakeQueryTextOptions
     {
@@ -484,7 +475,6 @@ namespace Azure.Storage.Files.DataLake.Models
         public string RecordSeparator { get { throw null; } set { } }
         public static Azure.Storage.Files.DataLake.Models.DataLakeQueryCsvTextOptions DataLakeQueryCsvTextOptions(string recordSeparator, string columnSeparator, char? quotationCharacter, char? escapeCharacter, bool hasHeaders) { throw null; }
         public static Azure.Storage.Files.DataLake.Models.DataLakeQueryJsonTextOptions DataLakeQueryJsonTextOptions(string recordSeparator) { throw null; }
->>>>>>> master
     }
     public partial class DataLakeRequestConditions : Azure.RequestConditions
     {
