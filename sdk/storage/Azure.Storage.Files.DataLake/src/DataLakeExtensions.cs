@@ -364,7 +364,7 @@ namespace Azure.Storage.Files.DataLake
             return blobQueryOptions;
         }
 
-        internal static BlobQueryTextOptions ToBlobQueryTextConfiguration(this DataLakeQueryTextOptions textConfiguration)
+        internal static IBlobQueryTextOptions ToBlobQueryTextConfiguration(this IDataLakeQueryTextOptions textConfiguration)
         {
             if (textConfiguration == null)
             {

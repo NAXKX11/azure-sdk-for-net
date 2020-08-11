@@ -431,13 +431,14 @@ namespace Azure.Storage.Files.DataLake.Models
         public char? FieldQuote { get { throw null; } set { } }
         public bool HasHeaders { get { throw null; } set { } }
     }
-    public partial class DataLakeQueryCsvTextOptions : Azure.Storage.Files.DataLake.Models.DataLakeQueryTextOptions
+    public partial class DataLakeQueryCsvTextOptions : Azure.Storage.Files.DataLake.Models.IDataLakeQueryTextOptions
     {
         public DataLakeQueryCsvTextOptions() { }
         public string ColumnSeparator { get { throw null; } set { } }
         public char? EscapeCharacter { get { throw null; } set { } }
         public bool HasHeaders { get { throw null; } set { } }
         public char? QuotationCharacter { get { throw null; } set { } }
+        public string RecordSeparator { get { throw null; } set { } }
     }
     public partial class DataLakeQueryError
     {
@@ -451,16 +452,17 @@ namespace Azure.Storage.Files.DataLake.Models
     {
         public DataLakeQueryJsonTextConfiguration() { }
     }
-    public partial class DataLakeQueryJsonTextOptions : Azure.Storage.Files.DataLake.Models.DataLakeQueryTextOptions
+    public partial class DataLakeQueryJsonTextOptions : Azure.Storage.Files.DataLake.Models.IDataLakeQueryTextOptions
     {
         public DataLakeQueryJsonTextOptions() { }
+        public string RecordSeparator { get { throw null; } set { } }
     }
     public partial class DataLakeQueryOptions
     {
         public DataLakeQueryOptions() { }
         public Azure.Storage.Files.DataLake.Models.DataLakeRequestConditions Conditions { get { throw null; } set { } }
-        public Azure.Storage.Files.DataLake.Models.DataLakeQueryTextOptions InputTextConfiguration { get { throw null; } set { } }
-        public Azure.Storage.Files.DataLake.Models.DataLakeQueryTextOptions OutputTextConfiguration { get { throw null; } set { } }
+        public Azure.Storage.Files.DataLake.Models.IDataLakeQueryTextOptions InputTextConfiguration { get { throw null; } set { } }
+        public Azure.Storage.Files.DataLake.Models.IDataLakeQueryTextOptions OutputTextConfiguration { get { throw null; } set { } }
         public System.IProgress<long> ProgressHandler { get { throw null; } set { } }
         public event System.Action<Azure.Storage.Files.DataLake.Models.DataLakeQueryError> ErrorHandler { add { } remove { } }
     }
@@ -468,13 +470,6 @@ namespace Azure.Storage.Files.DataLake.Models
     {
         protected DataLakeQueryTextConfiguration() { }
         public string RecordSeparator { get { throw null; } set { } }
-    }
-    public abstract partial class DataLakeQueryTextOptions
-    {
-        protected DataLakeQueryTextOptions() { }
-        public string RecordSeparator { get { throw null; } set { } }
-        public static Azure.Storage.Files.DataLake.Models.DataLakeQueryCsvTextOptions DataLakeQueryCsvTextOptions(string recordSeparator, string columnSeparator, char? quotationCharacter, char? escapeCharacter, bool hasHeaders) { throw null; }
-        public static Azure.Storage.Files.DataLake.Models.DataLakeQueryJsonTextOptions DataLakeQueryJsonTextOptions(string recordSeparator) { throw null; }
     }
     public partial class DataLakeRequestConditions : Azure.RequestConditions
     {
@@ -559,6 +554,9 @@ namespace Azure.Storage.Files.DataLake.Models
     {
         None = 0,
         Metadata = 1,
+    }
+    public partial interface IDataLakeQueryTextOptions
+    {
     }
     public partial class PathAccessControl
     {
