@@ -70,6 +70,7 @@ jobs:
             /p:ServiceDirectory=${{ parameters.ServiceDirectory }}
             /p:IncludeSrc=false /p:IncludeSamples=false
             /p:BuildInParallel=${{ parameters.BuildInParallel }}
+            /p:RuntimeFrameworkVersion=$(DotNetCoreRuntimeVersion)
             ${{ platform.AdditionalTestArguments }}
 
           displayName: "Build & Test (all tests for ${{ platform.TestTargetFramework }})"
