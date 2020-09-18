@@ -31,7 +31,7 @@ parameters:
   default:
     PublicCloud:
       SubscriptionConfiguration: $(sub-config-azure-cloud-test-resources)
-    ${{ if (eq(variables['System.TeamProject'], 'internal'), not(endsWith(variables['Build.DefinitionName'], ' - tests-weekly'))) }}:
+    ${{ if and(eq(variables['System.TeamProject'], 'internal'), endsWith(variables['Build.DefinitionName'], ' - tests-weekly')) }}:
       AzureUsGovCloud:
         SubscriptionConfiguration: $(sub-config-gov-test-resources)
         EnvVars:
