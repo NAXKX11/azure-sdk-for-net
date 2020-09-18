@@ -40,7 +40,7 @@ jobs:
     BuildInParallel: ${{ parameters.BuildInParallel }}
     TimeoutInMinutes: ${{ parameters.TimeoutInMinutes }}
     Location: ${{ parameters.Location }}
-    SubscriptionConfiguration: ${{ parameters.SubscriptionConfiguration }}
+    # SubscriptionConfiguration: ${{ parameters.SubscriptionConfiguration }}
     ServiceDirectory: ${{ parameters.ServiceDirectory }}
     CloudConfigurations:
       PublicCloud:
