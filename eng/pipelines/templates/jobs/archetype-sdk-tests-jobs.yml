@@ -47,7 +47,7 @@ jobs:
     - ${{ each platform in parameters.Platforms }}:
       - job:
         condition: eq(eq(variables['Record'], 'true'), eq('${{ platform.TestMode }}', 'Record'))
-        displayName: ${{ platform.DisplayName }}
+        displayName: ${{ platform.DisplayName }}_${{ cloudConfig.key }}
         variables:
           - template: ../variables/globals.yml
           - name: OSVmImage
@@ -70,9 +70,9 @@ jobs:
 
           - template: /eng/common/TestResources/deploy-test-resources.yml
             parameters:
-              Location: ${{ cloudConfig.Location }}
+              Location: ${{ cloudConfig.value.Location }}
               ServiceDirectory: '${{ parameters.ServiceDirectory }}'
-              SubscriptionConfiguration: ${{ cloudConfig.SubscriptionConfiguration }}
+              SubscriptionConfiguration: ${{ cloudConfig.value.SubscriptionConfiguration }}
 
           - script: >
               dotnet test eng/service.proj
@@ -96,7 +96,7 @@ jobs:
           - template: /eng/common/TestResources/remove-test-resources.yml
             parameters:
               ServiceDirectory: '${{ parameters.ServiceDirectory }}'
-              SubscriptionConfiguration: ${{ cloudConfig.SubscriptionConfiguration }}
+              SubscriptionConfiguration: ${{ cloudConfig.value.SubscriptionConfiguration }}
 
           - task: PublishTestResults@2
             condition: always()
