@@ -40,23 +40,60 @@ jobs:
     BuildInParallel: ${{ parameters.BuildInParallel }}
     TimeoutInMinutes: ${{ parameters.TimeoutInMinutes }}
     Location: ${{ parameters.Location }}
-    # SubscriptionConfiguration: ${{ parameters.SubscriptionConfiguration }}
     ServiceDirectory: ${{ parameters.ServiceDirectory }}
     CloudConfigurations:
       PublicCloud:
-        SubscriptionConfiguration: $(sub-config-azure-cloud-test-resources)
-        ArmTemplateParameters: "@{ keyVaultDomainSuffix = '.vault.azure.net'; storageEndpointSuffix = 'core.windows.net'; endpointSuffix = '.cognitiveservices.azure.com'; azureAuthorityHost = 'https://login.microsoftonline.com/'; keyVaultEndpointSuffix = '.vault.azure.net' }"
+        SubscriptionConfiguration: ${{ parameters.SubscriptionConfiguration }}
+        ArmTemplateParameters: >-
+          @{ keyVaultDomainSuffix = '.vault.azure.net';
+          storageEndpointSuffix = 'core.windows.net';
+          endpointSuffix = '.cognitiveservices.azure.com';
+          azureAuthorityHost = 'https://login.microsoftonline.com/';
+          keyVaultEndpointSuffix = '.vault.azure.net'
+          }
+        EnvVars:
+          SERVICE_MANAGEMENT_URL: https://management.core.windows.net/
+          STORAGE_ENDPOINT_SUFFIX: core.windows.net
+          RESOURCE_MANAGER_URL: https://management.azure.com/
+          SEARCH_ENDPOINT_SUFFIX: search.windows.net
+          COSMOS_TABLES_ENDPOINT_SUFFIX: cosmos.azure.com
       ${{ if and(eq(variables['System.TeamProject'], 'internal'), endsWith(variables['Build.DefinitionName'], ' - tests-weekly')) }}:
         AzureUsGovCloud:
           SubscriptionConfiguration: $(sub-config-gov-test-resources)
-          ArmTemplateParameters: "@{ keyVaultDomainSuffix = '.vault.usgovcloudapi.net'; storageEndpointSuffix = 'core.usgovcloudapi.net'; endpointSuffix = '.cognitiveservices.azure.us'; azureAuthorityHost = 'https://login.microsoftonline.us/'; keyVaultEndpointSuffix = '.vault.usgovcloudapi.net'; enableStorageVersioning = $false }"
+          ArmTemplateParameters: >-
+            @{ keyVaultDomainSuffix = '.vault.usgovcloudapi.net';
+            storageEndpointSuffix = 'core.usgovcloudapi.net';
+            endpointSuffix = '.cognitiveservices.azure.us';
+            azureAuthorityHost = 'https://login.microsoftonline.us/';
+            keyVaultEndpointSuffix = '.vault.usgovcloudapi.net';
+            enableStorageVersioning = $false
+            }
           EnvVars:
             AZURE_AUTHORITY_HOST: https://login.microsoftonline.us
+            RESOURCE_MANAGER_URL: https://management.usgovcloudapi.net/
+            STORAGE_ENDPOINT_SUFFIX: core.usgovcloudapi.net
+            SERVICE_MANAGEMENT_URL: https://management.core.usgovcloudapi.net/
+            SEARCH_ENDPOINT_SUFFIX: search.azure.us
+            COSMOS_TABLES_ENDPOINT_SUFFIX: cosmos.azure.us
         AzureChinaCloud:
           SubscriptionConfiguration: $(sub-config-cn-test-resources)
-          ArmTemplateParameters: "@{ keyVaultDomainSuffix = '.vault.azure.cn'; storageEndpointSuffix = 'core.chinacloudapi.cn'; azureAuthorityHost = 'https://login.chinacloudapi.cn/'; keyVaultEndpointSuffix = '.vault.azure.cn'; keyVaultSku = 'standard'; enableStorageVersioning = $false; endpointSuffix = '.cognitiveservices.azure.cn'; textAnalyticsSku = 'S' }"
+          ArmTemplateParameters: >-
+            "@{ keyVaultDomainSuffix = '.vault.azure.cn';
+            storageEndpointSuffix = 'core.chinacloudapi.cn';
+            azureAuthorityHost = 'https://login.chinacloudapi.cn/';
+            keyVaultEndpointSuffix = '.vault.azure.cn';
+            keyVaultSku = 'standard';
+            enableStorageVersioning = $false;
+            endpointSuffix = '.cognitiveservices.azure.cn';
+            textAnalyticsSku = 'S'
+            }
           EnvVars:
             AZURE_AUTHORITY_HOST: https://login.chinacloudapi.cn
+            SERVICE_MANAGEMENT_URL: https://management.core.chinacloudapi.cn/
+            RESOURCE_MANAGER_URL: https://management.chinacloudapi.cn
+            STORAGE_ENDPOINT_SUFFIX: core.chinacloudapi.cn
+            SEARCH_ENDPOINT_SUFFIX: search.azure.cn
+            COSMOS_TABLES_ENDPOINT_SUFFIX: cosmos.azure.cn
 
     platforms:
       - DisplayName: "Test on Linux"
@@ -64,39 +101,39 @@ jobs:
         TestTargetFramework: netcoreapp2.1
         PreSteps:
           - template: /eng/common/pipelines/templates/steps/bypass-local-dns.yml
-      # - DisplayName: "Test on Windows for NetCoreApp"
-      #   OSVmImage: "windows-2019"
-      #   TestTargetFramework: netcoreapp2.1
-      # - DisplayName: "Test on Windows for NetCoreApp with UseProjectReferenceToAzureClients=true"
-      #   OSVmImage: "windows-2019"
-      #   TestTargetFramework: netcoreapp2.1
-      #   AdditionalTestArguments: /p:UseProjectReferenceToAzureClients=true
-      # - DisplayName: "Test on Windows for .Net Framework"
-      #   OSVmImage: "windows-2019"
-      #   TestTargetFramework: net461
-      # - DisplayName: "Test on Windows for .Net Framework with UseProjectReferenceToAzureClients=true"
-      #   OSVmImage: "windows-2019"
-      #   TestTargetFramework: net461
-      #   AdditionalTestArguments: /p:UseProjectReferenceToAzureClients=true
-      # - DisplayName: "Test on MacOS"
-      #   OSVmImage: "macOS-10.15"
-      #   TestTargetFramework: netcoreapp2.1
-      # - DisplayName: "Record on Windows for NetCoreApp"
-      #   OSVmImage: "windows-2019"
-      #   TestMode: Record
-      #   TestTargetFramework: netcoreapp2.1
-      #   AdditionalTestArguments: /p:AutoUpdateSessionRecords=true
-      #   PostSteps:
-      #     - task: CopyFiles@2
-      #       displayName: "Copy Test Recordings"
-      #       inputs:
-      #         sourceFolder: '$(Build.SourcesDirectory)'
-      #         contents: 'sdk/${{ parameters.ServiceDirectory }}/**/SessionRecords/**/*.json'
-      #         targetFolder: '$(Build.ArtifactStagingDirectory)/SessionRecords'
-      #     - task: PublishBuildArtifacts@1
-      #       displayName: "Publish Test Recordings"
-      #       inputs:
-      #         pathToPublish: '$(Build.ArtifactStagingDirectory)/SessionRecords'
-      #         artifactName: SessionRecords
+      - DisplayName: "Test on Windows for NetCoreApp"
+        OSVmImage: "windows-2019"
+        TestTargetFramework: netcoreapp2.1
+      - DisplayName: "Test on Windows for NetCoreApp with UseProjectReferenceToAzureClients=true"
+        OSVmImage: "windows-2019"
+        TestTargetFramework: netcoreapp2.1
+        AdditionalTestArguments: /p:UseProjectReferenceToAzureClients=true
+      - DisplayName: "Test on Windows for .Net Framework"
+        OSVmImage: "windows-2019"
+        TestTargetFramework: net461
+      - DisplayName: "Test on Windows for .Net Framework with UseProjectReferenceToAzureClients=true"
+        OSVmImage: "windows-2019"
+        TestTargetFramework: net461
+        AdditionalTestArguments: /p:UseProjectReferenceToAzureClients=true
+      - DisplayName: "Test on MacOS"
+        OSVmImage: "macOS-10.15"
+        TestTargetFramework: netcoreapp2.1
+      - DisplayName: "Record on Windows for NetCoreApp"
+        OSVmImage: "windows-2019"
+        TestMode: Record
+        TestTargetFramework: netcoreapp2.1
+        AdditionalTestArguments: /p:AutoUpdateSessionRecords=true
+        PostSteps:
+          - task: CopyFiles@2
+            displayName: "Copy Test Recordings"
+            inputs:
+              sourceFolder: '$(Build.SourcesDirectory)'
+              contents: 'sdk/${{ parameters.ServiceDirectory }}/**/SessionRecords/**/*.json'
+              targetFolder: '$(Build.ArtifactStagingDirectory)/SessionRecords'
+          - task: PublishBuildArtifacts@1
+            displayName: "Publish Test Recordings"
+            inputs:
+              pathToPublish: '$(Build.ArtifactStagingDirectory)/SessionRecords'
+              artifactName: SessionRecords
 
       - ${{ parameters.AdditionalPlatforms }}
