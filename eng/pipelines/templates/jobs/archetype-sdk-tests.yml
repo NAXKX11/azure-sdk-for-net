@@ -45,13 +45,16 @@ jobs:
     CloudConfigurations:
       PublicCloud:
         SubscriptionConfiguration: $(sub-config-azure-cloud-test-resources)
+        ArmTemplateParameters: "@{ keyVaultDomainSuffix = '.vault.azure.net'; storageEndpointSuffix = 'core.windows.net'; endpointSuffix = '.cognitiveservices.azure.com'; azureAuthorityHost = 'https://login.microsoftonline.com/'; keyVaultEndpointSuffix = '.vault.azure.net' }"
       ${{ if and(eq(variables['System.TeamProject'], 'internal'), endsWith(variables['Build.DefinitionName'], ' - tests-weekly')) }}:
         AzureUsGovCloud:
           SubscriptionConfiguration: $(sub-config-gov-test-resources)
+          ArmTemplateParameters: "@{ keyVaultDomainSuffix = '.vault.usgovcloudapi.net'; storageEndpointSuffix = 'core.usgovcloudapi.net'; endpointSuffix = '.cognitiveservices.azure.us'; azureAuthorityHost = 'https://login.microsoftonline.us/'; keyVaultEndpointSuffix = '.vault.usgovcloudapi.net'; enableStorageVersioning = $false }"
           EnvVars:
             AZURE_AUTHORITY_HOST: https://login.microsoftonline.us
         AzureChinaCloud:
           SubscriptionConfiguration: $(sub-config-cn-test-resources)
+          ArmTemplateParameters: "@{ keyVaultDomainSuffix = '.vault.azure.cn'; storageEndpointSuffix = 'core.chinacloudapi.cn'; azureAuthorityHost = 'https://login.chinacloudapi.cn/'; keyVaultEndpointSuffix = '.vault.azure.cn'; keyVaultSku = 'standard'; enableStorageVersioning = $false; endpointSuffix = '.cognitiveservices.azure.cn'; textAnalyticsSku = 'S' }"
           EnvVars:
             AZURE_AUTHORITY_HOST: https://login.chinacloudapi.cn
 

@@ -67,6 +67,7 @@ jobs:
               Location: ${{ cloudConfig.value.Location }}
               ServiceDirectory: '${{ parameters.ServiceDirectory }}'
               SubscriptionConfiguration: ${{ cloudConfig.value.SubscriptionConfiguration }}
+              ArmTemplateParameters: ${{ cloudConfig.value.ArmTemplateParameters }}
 
           - script: >
               dotnet test eng/service.proj
