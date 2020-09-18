@@ -45,15 +45,15 @@ jobs:
     CloudConfigurations:
       PublicCloud:
         SubscriptionConfiguration: $(sub-config-azure-cloud-test-resources)
-      # ${{ if and(eq(variables['System.TeamProject'], 'internal'), endsWith(variables['Build.DefinitionName'], ' - tests-weekly')) }}:
-      #   AzureUsGovCloud:
-      #     SubscriptionConfiguration: $(sub-config-gov-test-resources)
-      #     EnvVars:
-      #       AZURE_AUTHORITY_HOST: https://login.microsoftonline.us
-      #   AzureChinaCloud:
-      #     SubscriptionConfiguration: $(sub-config-cn-test-resources)
-      #     EnvVars:
-      #       AZURE_AUTHORITY_HOST: https://login.chinacloudapi.cn
+      ${{ if and(eq(variables['System.TeamProject'], 'internal'), endsWith(variables['Build.DefinitionName'], ' - tests-weekly')) }}:
+        AzureUsGovCloud:
+          SubscriptionConfiguration: $(sub-config-gov-test-resources)
+          EnvVars:
+            AZURE_AUTHORITY_HOST: https://login.microsoftonline.us
+        AzureChinaCloud:
+          SubscriptionConfiguration: $(sub-config-cn-test-resources)
+          EnvVars:
+            AZURE_AUTHORITY_HOST: https://login.chinacloudapi.cn
 
     platforms:
       - DisplayName: "Test on Linux"
@@ -61,39 +61,39 @@ jobs:
         TestTargetFramework: netcoreapp2.1
         PreSteps:
           - template: /eng/common/pipelines/templates/steps/bypass-local-dns.yml
-      - DisplayName: "Test on Windows for NetCoreApp"
-        OSVmImage: "windows-2019"
-        TestTargetFramework: netcoreapp2.1
-      - DisplayName: "Test on Windows for NetCoreApp with UseProjectReferenceToAzureClients=true"
-        OSVmImage: "windows-2019"
-        TestTargetFramework: netcoreapp2.1
-        AdditionalTestArguments: /p:UseProjectReferenceToAzureClients=true
-      - DisplayName: "Test on Windows for .Net Framework"
-        OSVmImage: "windows-2019"
-        TestTargetFramework: net461
-      - DisplayName: "Test on Windows for .Net Framework with UseProjectReferenceToAzureClients=true"
-        OSVmImage: "windows-2019"
-        TestTargetFramework: net461
-        AdditionalTestArguments: /p:UseProjectReferenceToAzureClients=true
-      - DisplayName: "Test on MacOS"
-        OSVmImage: "macOS-10.15"
-        TestTargetFramework: netcoreapp2.1
-      - DisplayName: "Record on Windows for NetCoreApp"
-        OSVmImage: "windows-2019"
-        TestMode: Record
-        TestTargetFramework: netcoreapp2.1
-        AdditionalTestArguments: /p:AutoUpdateSessionRecords=true
-        PostSteps:
-          - task: CopyFiles@2
-            displayName: "Copy Test Recordings"
-            inputs:
-              sourceFolder: '$(Build.SourcesDirectory)'
-              contents: 'sdk/${{ parameters.ServiceDirectory }}/**/SessionRecords/**/*.json'
-              targetFolder: '$(Build.ArtifactStagingDirectory)/SessionRecords'
-          - task: PublishBuildArtifacts@1
-            displayName: "Publish Test Recordings"
-            inputs:
-              pathToPublish: '$(Build.ArtifactStagingDirectory)/SessionRecords'
-              artifactName: SessionRecords
+      # - DisplayName: "Test on Windows for NetCoreApp"
+      #   OSVmImage: "windows-2019"
+      #   TestTargetFramework: netcoreapp2.1
+      # - DisplayName: "Test on Windows for NetCoreApp with UseProjectReferenceToAzureClients=true"
+      #   OSVmImage: "windows-2019"
+      #   TestTargetFramework: netcoreapp2.1
+      #   AdditionalTestArguments: /p:UseProjectReferenceToAzureClients=true
+      # - DisplayName: "Test on Windows for .Net Framework"
+      #   OSVmImage: "windows-2019"
+      #   TestTargetFramework: net461
+      # - DisplayName: "Test on Windows for .Net Framework with UseProjectReferenceToAzureClients=true"
+      #   OSVmImage: "windows-2019"
+      #   TestTargetFramework: net461
+      #   AdditionalTestArguments: /p:UseProjectReferenceToAzureClients=true
+      # - DisplayName: "Test on MacOS"
+      #   OSVmImage: "macOS-10.15"
+      #   TestTargetFramework: netcoreapp2.1
+      # - DisplayName: "Record on Windows for NetCoreApp"
+      #   OSVmImage: "windows-2019"
+      #   TestMode: Record
+      #   TestTargetFramework: netcoreapp2.1
+      #   AdditionalTestArguments: /p:AutoUpdateSessionRecords=true
+      #   PostSteps:
+      #     - task: CopyFiles@2
+      #       displayName: "Copy Test Recordings"
+      #       inputs:
+      #         sourceFolder: '$(Build.SourcesDirectory)'
+      #         contents: 'sdk/${{ parameters.ServiceDirectory }}/**/SessionRecords/**/*.json'
+      #         targetFolder: '$(Build.ArtifactStagingDirectory)/SessionRecords'
+      #     - task: PublishBuildArtifacts@1
+      #       displayName: "Publish Test Recordings"
+      #       inputs:
+      #         pathToPublish: '$(Build.ArtifactStagingDirectory)/SessionRecords'
+      #         artifactName: SessionRecords
 
       - ${{ parameters.AdditionalPlatforms }}
