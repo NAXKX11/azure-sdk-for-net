@@ -78,7 +78,7 @@ jobs:
         AzureChinaCloud:
           SubscriptionConfiguration: $(sub-config-cn-test-resources)
           ArmTemplateParameters: >-
-            "@{ keyVaultDomainSuffix = '.vault.azure.cn';
+            @{ keyVaultDomainSuffix = '.vault.azure.cn';
             storageEndpointSuffix = 'core.chinacloudapi.cn';
             azureAuthorityHost = 'https://login.chinacloudapi.cn/';
             keyVaultEndpointSuffix = '.vault.azure.cn';
