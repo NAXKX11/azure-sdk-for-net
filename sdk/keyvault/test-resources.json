@@ -95,7 +95,7 @@
             "properties": {
                 "sku": {
                     "family": "A",
-                    "name": "premium"
+                    "name": "[parameters('keyVaultSku')]"
                 },
                 "tenantId": "[parameters('tenantId')]",
                 "accessPolicies": [
