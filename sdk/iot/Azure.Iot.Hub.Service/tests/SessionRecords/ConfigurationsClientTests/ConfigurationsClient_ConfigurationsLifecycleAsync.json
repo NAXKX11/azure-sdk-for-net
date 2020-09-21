@@ -4,12 +4,13 @@
       "RequestUri": "https://FakeHost.net/configurations/configlifecycle410659325?api-version=2020-03-13",
       "RequestMethod": "PUT",
       "RequestHeaders": {
+        "Accept": "application/json",
         "Authorization": "Sanitized",
         "Content-Length": "230",
         "Content-Type": "application/json",
         "If-Match": "\u0022\u0022",
         "User-Agent": [
-          "azsdk-net-Iot.Hub.Service/1.0.0-dev.20200819.1",
+          "azsdk-net-Iot.Hub.Service/1.0.0-dev.20200901.1",
           "(.NET Core 4.6.29130.01; Microsoft Windows 10.0.18363 )"
         ],
         "x-ms-client-request-id": "a55ee7c70a2a95129ff02b619adb64c2",
@@ -32,11 +33,11 @@
       "ResponseHeaders": {
         "Content-Length": "608",
         "Content-Type": "application/json; charset=utf-8",
-        "Date": "Wed, 19 Aug 2020 18:21:34 GMT",
+        "Date": "Tue, 01 Sep 2020 20:58:35 GMT",
         "ETag": "\u0022MQ==\u0022",
         "Server": "Microsoft-HTTPAPI/2.0",
         "Vary": "Origin",
-        "x-ms-request-id": "69db3836-ba3a-4951-a9dd-5e800f561947"
+        "x-ms-request-id": "4fc21484-e8a2-4097-aeb3-900fa649e0f9"
       },
       "ResponseBody": {
         "id": "configlifecycle410659325",
@@ -50,8 +51,8 @@
           }
         },
         "targetCondition": "*",
-        "createdTimeUtc": "2020-08-19T18:21:34.1112179Z",
-        "lastUpdatedTimeUtc": "2020-08-19T18:21:34.1112179Z",
+        "createdTimeUtc": "2020-09-01T20:58:35.6754446Z",
+        "lastUpdatedTimeUtc": "2020-09-01T20:58:35.6754446Z",
         "priority": 565659747,
         "systemMetrics": {
           "results": {},
@@ -71,9 +72,10 @@
       "RequestUri": "https://FakeHost.net/configurations/configlifecycle410659325?api-version=2020-03-13",
       "RequestMethod": "GET",
       "RequestHeaders": {
+        "Accept": "application/json",
         "Authorization": "Sanitized",
         "User-Agent": [
-          "azsdk-net-Iot.Hub.Service/1.0.0-dev.20200819.1",
+          "azsdk-net-Iot.Hub.Service/1.0.0-dev.20200901.1",
           "(.NET Core 4.6.29130.01; Microsoft Windows 10.0.18363 )"
         ],
         "x-ms-client-request-id": "161f9779a49eaee08e7eb14fd06c966a",
@@ -84,11 +86,11 @@
       "ResponseHeaders": {
         "Content-Length": "608",
         "Content-Type": "application/json; charset=utf-8",
-        "Date": "Wed, 19 Aug 2020 18:21:33 GMT",
+        "Date": "Tue, 01 Sep 2020 20:58:35 GMT",
         "ETag": "\u0022MQ==\u0022",
         "Server": "Microsoft-HTTPAPI/2.0",
         "Vary": "Origin",
-        "x-ms-request-id": "4beee9df-356e-4a5f-9807-aaa62d868230"
+        "x-ms-request-id": "11c6bee2-dd47-468c-b77a-a19eb5f81112"
       },
       "ResponseBody": {
         "id": "configlifecycle410659325",
@@ -102,8 +104,8 @@
           }
         },
         "targetCondition": "*",
-        "createdTimeUtc": "2020-08-19T18:21:34.1112179Z",
-        "lastUpdatedTimeUtc": "2020-08-19T18:21:34.1112179Z",
+        "createdTimeUtc": "2020-09-01T20:58:35.6754446Z",
+        "lastUpdatedTimeUtc": "2020-09-01T20:58:35.6754446Z",
         "priority": 565659747,
         "systemMetrics": {
           "results": {},
@@ -123,53 +125,28 @@
       "RequestUri": "https://FakeHost.net/configurations/configlifecycle410659325?api-version=2020-03-13",
       "RequestMethod": "PUT",
       "RequestHeaders": {
+        "Accept": "application/json",
         "Authorization": "Sanitized",
-        "Content-Length": "598",
+        "Content-Length": "588",
         "Content-Type": "application/json",
         "If-Match": "*",
         "User-Agent": [
-          "azsdk-net-Iot.Hub.Service/1.0.0-dev.20200819.1",
+          "azsdk-net-Iot.Hub.Service/1.0.0-dev.20200901.1",
           "(.NET Core 4.6.29130.01; Microsoft Windows 10.0.18363 )"
         ],
         "x-ms-client-request-id": "0977fd2bb1b194416684ee2cc29235d6",
         "x-ms-return-client-request-id": "true"
       },
-      "RequestBody": {
-        "id": "configlifecycle410659325",
-        "labels": {
-          "HostPlatform": "SomeValue"
-        },
-        "content": {
-          "deviceContent": {
-            "properties.desired.deviceContent_key": "deviceContent_value-configlifecycle410659325"
-          }
-        },
-        "targetCondition": "*",
-        "createdTimeUtc": "2020-08-19T18:21:34.1112179Z",
-        "lastUpdatedTimeUtc": "2020-08-19T18:21:34.1112179Z",
-        "priority": 2082685974,
-        "systemMetrics": {
-          "results": {},
-          "queries": {
-            "targetedCount": "select deviceId from devices",
-            "appliedCount": "select deviceId from devices where configurations.[[configlifecycle410659325]].status = \u0027Applied\u0027"
-          }
-        },
-        "metrics": {
-          "results": {},
-          "queries": {}
-        },
-        "etag": "MQ=="
-      },
+      "RequestBody": "{\u0022id\u0022:\u0022configlifecycle410659325\u0022,\u0022labels\u0022:{\u0022HostPlatform\u0022:\u0022SomeValue\u0022},\u0022content\u0022:{\u0022deviceContent\u0022:{\u0022properties.desired.deviceContent_key\u0022:\u0022deviceContent_value-configlifecycle410659325\u0022}},\u0022targetCondition\u0022:\u0022*\u0022,\u0022createdTimeUtc\u0022:\u00222020-09-01T20:58:35.6754446Z\u0022,\u0022lastUpdatedTimeUtc\u0022:\u00222020-09-01T20:58:35.6754446Z\u0022,\u0022priority\u0022:2082685974,\u0022systemMetrics\u0022:{\u0022results\u0022:{},\u0022queries\u0022:{\u0022targetedCount\u0022:\u0022select deviceId from devices\u0022,\u0022appliedCount\u0022:\u0022select deviceId from devices where configurations.[[configlifecycle410659325]].status = \u0027Applied\u0027\u0022}},\u0022metrics\u0022:{\u0022results\u0022:{},\u0022queries\u0022:{}},\u0022etag\u0022:\u0022MQ==\u0022}",
       "StatusCode": 200,
       "ResponseHeaders": {
         "Content-Length": "609",
         "Content-Type": "application/json; charset=utf-8",
-        "Date": "Wed, 19 Aug 2020 18:21:33 GMT",
+        "Date": "Tue, 01 Sep 2020 20:58:35 GMT",
         "ETag": "\u0022Mg==\u0022",
         "Server": "Microsoft-HTTPAPI/2.0",
         "Vary": "Origin",
-        "x-ms-request-id": "0ffda1dc-8f05-483d-bd17-977009bdf2af"
+        "x-ms-request-id": "1b7b0ebe-214e-4ae4-b66a-18b28f3466e9"
       },
       "ResponseBody": {
         "id": "configlifecycle410659325",
@@ -183,8 +160,8 @@
           }
         },
         "targetCondition": "*",
-        "createdTimeUtc": "2020-08-19T18:21:34.1112179Z",
-        "lastUpdatedTimeUtc": "2020-08-19T18:21:34.2696952Z",
+        "createdTimeUtc": "2020-09-01T20:58:35.6754446Z",
+        "lastUpdatedTimeUtc": "2020-09-01T20:58:35.7678559Z",
         "priority": 2082685974,
         "systemMetrics": {
           "results": {},
@@ -207,7 +184,7 @@
         "Authorization": "Sanitized",
         "If-Match": "*",
         "User-Agent": [
-          "azsdk-net-Iot.Hub.Service/1.0.0-dev.20200819.1",
+          "azsdk-net-Iot.Hub.Service/1.0.0-dev.20200901.1",
           "(.NET Core 4.6.29130.01; Microsoft Windows 10.0.18363 )"
         ],
         "x-ms-client-request-id": "f2c8fdf700dd23c406b016ab59c3c533",
@@ -217,16 +194,16 @@
       "StatusCode": 204,
       "ResponseHeaders": {
         "Content-Length": "0",
-        "Date": "Wed, 19 Aug 2020 18:21:33 GMT",
+        "Date": "Tue, 01 Sep 2020 20:58:35 GMT",
         "Server": "Microsoft-HTTPAPI/2.0",
         "Vary": "Origin",
-        "x-ms-request-id": "aabe94a7-1550-4d89-b1bf-ec25fcd356c5"
+        "x-ms-request-id": "31acca08-ba6b-44be-9ba1-634295484d8e"
       },
       "ResponseBody": []
     }
   ],
   "Variables": {
-    "IOT_HUB_CONNECTION_STRING": "HostName=FakeHost.net;SharedAccessKeyName=iothubowner;SharedAccessKey=Kg==;",
+    "IOT_HUB_CONNECTION_STRING": "HostName=FakeHost.net;SharedAccessKeyName=iothubowner;SharedAccessKey=Kg==",
     "RandomSeed": "1472909663"
   }
 }
