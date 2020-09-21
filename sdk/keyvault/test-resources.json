@@ -213,7 +213,7 @@
             "type": "string",
             "value": "[variables('azureKeyVaultUrl')]"
         },
-        "KEYVAULT_SKU": {
+        "AZURE_KEYVAULT_SKU": {
             "type": "string",
             "value": "[reference(resourceId('Microsoft.KeyVault/vaults', parameters('baseName'))).sku.name]"
         },
