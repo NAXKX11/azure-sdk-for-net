@@ -42,7 +42,7 @@ jobs:
     Location: ${{ parameters.Location }}
     ServiceDirectory: ${{ parameters.ServiceDirectory }}
     CloudConfigurations:
-      PublicCloud:
+      AzureCloud:
         SubscriptionConfiguration: ${{ parameters.SubscriptionConfiguration }}
         ArmTemplateParameters: >-
           @{ keyVaultDomainSuffix = '.vault.azure.net';

@@ -29,7 +29,7 @@ parameters:
 - name: CloudConfigurations
   type: object
   default:
-    PublicCloud:
+    AzureCloud:
       SubscriptionConfiguration: $(sub-config-azure-cloud-test-resources)
 
 
