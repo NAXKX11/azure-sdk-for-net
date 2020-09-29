@@ -19,7 +19,7 @@ namespace Azure.Messaging.EventGrid.SystemEvents
             Optional<string> removedBy = default;
             Optional<ACSChatThreadMemberProperties> memberRemoved = default;
             Optional<DateTimeOffset> createTime = default;
-            Optional<int> version = default;
+            Optional<UInt64> version = default;
             Optional<string> recipientId = default;
             Optional<string> transactionId = default;
             Optional<string> threadId = default;
@@ -47,7 +47,7 @@ namespace Azure.Messaging.EventGrid.SystemEvents
                 }
                 if (property.NameEquals("version"))
                 {
-                    version = property.Value.GetInt32();
+                    version = property.Value.GetUInt64();
                     continue;
                 }
                 if (property.NameEquals("recipientId"))
