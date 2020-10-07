@@ -70,7 +70,7 @@ namespace Azure.Storage.Test.Shared
                 options.AddPolicy(new RecordedClientRequestIdPolicy(Recording, parallelRange), HttpPipelinePosition.PerCall);
             }
 
-            return Recording.InstrumentClientOptions(options);
+            return InstrumentClientOptions(options);
         }
 
         public BlobClientOptions GetFaultyBlobConnectionOptions(
@@ -269,7 +269,7 @@ namespace Azure.Storage.Test.Shared
             }
 
             BlobContainerClient container = InstrumentClient(service.GetBlobContainerClient(containerName));
-            await container.CreateAsync(metadata: metadata, publicAccessType: publicAccessType.Value);
+            await container.CreateIfNotExistsAsync(metadata: metadata, publicAccessType: publicAccessType.Value);
             return new DisposingContainer(container);
         }
 
@@ -442,7 +442,7 @@ namespace Azure.Storage.Test.Shared
                 StartsOn = Recording.UtcNow.AddHours(-1),
                 ExpiresOn = Recording.UtcNow.AddHours(+1),
                 IPRange = new SasIPRange(IPAddress.None, IPAddress.None),
-                Version = sasVersion ?? ToSasVersion(_serviceVersion)
+                Version = sasVersion ?? ToSasVersion(BlobClientOptions.ServiceVersion.V2020_02_10)
             };
 
         public BlobSasQueryParameters GetNewBlobServiceIdentitySasCredentialsBlob(string containerName, string blobName, UserDelegationKey userDelegationKey, string accountName)
@@ -489,7 +489,7 @@ namespace Azure.Storage.Test.Shared
         public async Task<PageBlobClient> CreatePageBlobClientAsync(BlobContainerClient container, long size)
         {
             PageBlobClient blob = InstrumentClient(container.GetPageBlobClient(GetNewBlobName()));
-            await blob.CreateAsync(size, 0).ConfigureAwait(false);
+            await blob.CreateIfNotExistsAsync(size, 0).ConfigureAwait(false);
             return blob;
         }
 
@@ -656,7 +656,7 @@ namespace Azure.Storage.Test.Shared
                 {
                     try
                     {
-                        await Container.DeleteAsync();
+                        await Container.DeleteIfExistsAsync();
                         Container = null;
                     }
                     catch

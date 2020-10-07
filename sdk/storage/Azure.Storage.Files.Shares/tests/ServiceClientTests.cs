@@ -76,6 +76,7 @@ namespace Azure.Storage.Files.Shares.Test
 
         [Test]
         [NonParallelizable]
+        [PlaybackOnly("https://github.com/Azure/azure-sdk-for-net/issues/15505")]
         public async Task SetPropertiesAsync()
         {
             // Arrange
@@ -104,6 +105,7 @@ namespace Azure.Storage.Files.Shares.Test
 
         [Test]
         [ServiceVersion(Min = ShareClientOptions.ServiceVersion.V2019_12_12)]
+        [PlaybackOnly("https://github.com/Azure/azure-sdk-for-net/issues/15505")]
         [NonParallelizable]
         public async Task GetSetServicePropertiesAsync_SmbMultiChannel()
         {
@@ -115,19 +117,19 @@ namespace Azure.Storage.Files.Shares.Test
             ShareServiceProperties properties = propertiesResponse.Value;
 
             // Assert
-            Assert.IsFalse(properties.ProtocolSettings.SmbSettings.Multichannel.Enabled);
+            Assert.IsFalse(properties.Protocol.Smb.Multichannel.Enabled);
 
             // Act
-            properties.ProtocolSettings.SmbSettings.Multichannel.Enabled = true;
+            properties.Protocol.Smb.Multichannel.Enabled = true;
             await service.SetPropertiesAsync(properties);
             propertiesResponse = await service.GetPropertiesAsync();
             properties = propertiesResponse.Value;
 
             // Assert
-            Assert.IsTrue(properties.ProtocolSettings.SmbSettings.Multichannel.Enabled);
+            Assert.IsTrue(properties.Protocol.Smb.Multichannel.Enabled);
 
             // Cleanup
-            properties.ProtocolSettings.SmbSettings.Multichannel.Enabled = false;
+            properties.Protocol.Smb.Multichannel.Enabled = false;
             await service.SetPropertiesAsync(properties);
         }
 
@@ -250,6 +252,33 @@ namespace Azure.Storage.Files.Shares.Test
             ShareItem shareItem = shares.Where(s => s.Name == share.Name).FirstOrDefault();
             Assert.IsTrue(shareItem.IsDeleted);
             Assert.IsNotNull(shareItem.VersionId);
+        }
+
+        [Test]
+        [ServiceVersion(Min = ShareClientOptions.ServiceVersion.V2019_12_12)]
+        public async Task ListSharesSegmentAsync_AccessTier()
+        {
+            // Arrange
+            ShareServiceClient service = GetServiceClient_SharedKey();
+
+            // Ensure at least one share
+            await using DisposingShare test = await GetTestShareAsync(service);
+            ShareClient share = test.Share;
+
+            await test.Share.SetAccessTierAsync(ShareAccessTier.Hot);
+
+            var shares = new List<ShareItem>();
+            await foreach (ShareItem shareItem in service.GetSharesAsync())
+            {
+                shares.Add(shareItem);
+            }
+
+            ShareItem shareItemForShare = shares.FirstOrDefault(r => r.Name == test.Share.Name);
+
+            // Assert
+            Assert.AreEqual(ShareAccessTier.Hot.ToString(), shareItemForShare.Properties.AccessTier);
+            Assert.IsNotNull(shareItemForShare.Properties.AccessTierChangeTime);
+            Assert.AreEqual("pending-from-transactionOptimized", shareItemForShare.Properties.AccessTierTransitionState);
         }
 
         [Test]

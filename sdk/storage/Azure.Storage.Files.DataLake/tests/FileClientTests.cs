@@ -301,7 +301,7 @@ namespace Azure.Storage.Files.DataLake.Tests
             await using DisposingFileSystem test = await GetNewFileSystem();
             DataLakeDirectoryClient directory = await test.FileSystem.CreateDirectoryAsync(GetNewDirectoryName());
             DataLakeFileClient file = InstrumentClient(directory.GetFileClient(GetNewFileName()));
-            await file.CreateAsync();
+            await file.CreateIfNotExistsAsync();
 
             // Act
             Response<PathInfo> response = await file.CreateIfNotExistsAsync();
@@ -332,7 +332,7 @@ namespace Azure.Storage.Files.DataLake.Tests
             await using DisposingFileSystem test = await GetNewFileSystem();
             DataLakeDirectoryClient directory = await test.FileSystem.CreateDirectoryAsync(GetNewDirectoryName());
             DataLakeFileClient file = InstrumentClient(directory.GetFileClient(GetNewFileName()));
-            await file.CreateAsync();
+            await file.CreateIfNotExistsAsync();
 
             // Act
             Response<bool> response = await file.ExistsAsync();
@@ -393,7 +393,7 @@ namespace Azure.Storage.Files.DataLake.Tests
             await using DisposingFileSystem test = await GetNewFileSystem();
             DataLakeDirectoryClient directory = await test.FileSystem.CreateDirectoryAsync(GetNewDirectoryName());
             DataLakeFileClient file = InstrumentClient(directory.GetFileClient(GetNewFileName()));
-            await file.CreateAsync();
+            await file.CreateIfNotExistsAsync();
 
             // Act
             Response<bool> response = await file.DeleteIfExistsAsync();
@@ -1068,6 +1068,57 @@ namespace Azure.Storage.Files.DataLake.Tests
         }
 
         [Test]
+        [ServiceVersion(Min = DataLakeClientOptions.ServiceVersion.V2019_12_12)]
+        public async Task SetAccessControlRecursiveAsync()
+        {
+            await using DisposingFileSystem test = await GetNewFileSystem();
+            DataLakeDirectoryClient directory = await test.FileSystem.CreateDirectoryAsync(GetNewDirectoryName());
+            DataLakeFileClient file = await directory.CreateFileAsync(GetNewFileName());
+
+            // Act
+            AccessControlChangeResult result = await file.SetAccessControlRecursiveAsync(AccessControlList, null);
+
+            // Assert
+            Assert.AreEqual(0, result.Counters.ChangedDirectoriesCount);
+            Assert.AreEqual(1, result.Counters.ChangedFilesCount);
+            Assert.AreEqual(0, result.Counters.FailedChangesCount);
+        }
+
+        [Test]
+        [ServiceVersion(Min = DataLakeClientOptions.ServiceVersion.V2019_12_12)]
+        public async Task UpdateAccessControlRecursiveAsync()
+        {
+            await using DisposingFileSystem test = await GetNewFileSystem();
+            DataLakeDirectoryClient directory = await test.FileSystem.CreateDirectoryAsync(GetNewDirectoryName());
+            DataLakeFileClient file = await directory.CreateFileAsync(GetNewFileName());
+
+            // Act
+            AccessControlChangeResult result = await file.UpdateAccessControlRecursiveAsync(AccessControlList, null);
+
+            // Assert
+            Assert.AreEqual(0, result.Counters.ChangedDirectoriesCount);
+            Assert.AreEqual(1, result.Counters.ChangedFilesCount);
+            Assert.AreEqual(0, result.Counters.FailedChangesCount);
+        }
+
+        [Test]
+        [ServiceVersion(Min = DataLakeClientOptions.ServiceVersion.V2019_12_12)]
+        public async Task RemoveAccessControlRecursiveAsync()
+        {
+            await using DisposingFileSystem test = await GetNewFileSystem();
+            DataLakeDirectoryClient directory = await test.FileSystem.CreateDirectoryAsync(GetNewDirectoryName());
+            DataLakeFileClient file = await directory.CreateFileAsync(GetNewFileName());
+
+            // Act
+            AccessControlChangeResult result = await file.RemoveAccessControlRecursiveAsync(RemoveAccessControlList, null);
+
+            // Assert
+            Assert.AreEqual(0, result.Counters.ChangedDirectoriesCount);
+            Assert.AreEqual(1, result.Counters.ChangedFilesCount);
+            Assert.AreEqual(0, result.Counters.FailedChangesCount);
+        }
+
+        [Test]
         public async Task SetPermissionsAsync()
         {
             await using DisposingFileSystem test = await GetNewFileSystem();
@@ -1569,7 +1620,7 @@ namespace Azure.Storage.Files.DataLake.Tests
 
             // Arrange
             DataLakeFileClient file = InstrumentClient(test.FileSystem.GetFileClient(GetNewFileName()));
-            await file.CreateAsync();
+            await file.CreateIfNotExistsAsync();
             var data = GetRandomBuffer(Size);
 
             // Act
@@ -1610,7 +1661,7 @@ namespace Azure.Storage.Files.DataLake.Tests
 
             // Arrange
             DataLakeFileClient file = InstrumentClient(test.FileSystem.GetFileClient(GetNewFileName()));
-            await file.CreateAsync();
+            await file.CreateIfNotExistsAsync();
             var data = GetRandomBuffer(Size);
             TestProgress progress = new TestProgress();
 
@@ -1634,7 +1685,7 @@ namespace Azure.Storage.Files.DataLake.Tests
 
             // Arrange
             DataLakeFileClient file = InstrumentClient(test.FileSystem.GetFileClient(GetNewFileName()));
-            await file.CreateAsync();
+            await file.CreateIfNotExistsAsync();
             var data = GetRandomBuffer(Size);
             byte[] contentHash = MD5.Create().ComputeHash(data);
 
@@ -1670,7 +1721,7 @@ namespace Azure.Storage.Files.DataLake.Tests
 
             // Arrange
             DataLakeFileClient file = InstrumentClient(test.FileSystem.GetFileClient(GetNewFileName()));
-            await file.CreateAsync();
+            await file.CreateIfNotExistsAsync();
             var data0 = GetRandomBuffer(Constants.KB);
             var data1 = GetRandomBuffer(Constants.KB);
 
@@ -1700,7 +1751,7 @@ namespace Azure.Storage.Files.DataLake.Tests
 
             // Arrange
             DataLakeFileClient file = InstrumentClient(test.FileSystem.GetFileClient(GetNewFileName()));
-            await file.CreateAsync();
+            await file.CreateIfNotExistsAsync();
             var data = GetRandomBuffer(Size);
             var leaseId = Recording.Random.NewGuid().ToString();
             var duration = TimeSpan.FromSeconds(15);
@@ -1720,7 +1771,7 @@ namespace Azure.Storage.Files.DataLake.Tests
 
             // Arrange
             DataLakeFileClient file = InstrumentClient(test.FileSystem.GetFileClient(GetNewFileName()));
-            await file.CreateAsync();
+            await file.CreateIfNotExistsAsync();
             var data = GetRandomBuffer(Size);
 
             // Act
@@ -1739,7 +1790,7 @@ namespace Azure.Storage.Files.DataLake.Tests
 
             // Arrange
             DataLakeFileClient file = InstrumentClient(test.FileSystem.GetFileClient(GetNewFileName()));
-            await file.CreateAsync();
+            await file.CreateIfNotExistsAsync();
 
             // Act
             using (var stream = (MemoryStream)null)
@@ -1761,7 +1812,7 @@ namespace Azure.Storage.Files.DataLake.Tests
 
             // Arrange
             DataLakeFileClient file = InstrumentClient(test.FileSystem.GetFileClient(GetNewFileName()));
-            await file.CreateAsync();
+            await file.CreateIfNotExistsAsync();
             var data = GetRandomBuffer(Constants.KB);
 
             using (var stream = new MemoryStream(data))
@@ -1783,7 +1834,7 @@ namespace Azure.Storage.Files.DataLake.Tests
 
             // Arrange
             DataLakeFileClient file = InstrumentClient(test.FileSystem.GetFileClient(GetNewFileName()));
-            await file.CreateAsync();
+            await file.CreateIfNotExistsAsync();
             byte[] data = GetRandomBuffer(Constants.KB);
             byte[] contentHash = MD5.Create().ComputeHash(data);
             PathHttpHeaders headers = new PathHttpHeaders
@@ -1821,7 +1872,7 @@ namespace Azure.Storage.Files.DataLake.Tests
 
             // Arrange
             DataLakeFileClient file = InstrumentClient(test.FileSystem.GetFileClient(GetNewFileName()));
-            await file.CreateAsync();
+            await file.CreateIfNotExistsAsync();
             var data = GetRandomBuffer(Constants.KB);
 
             using (var stream = new MemoryStream(data))
@@ -1843,7 +1894,7 @@ namespace Azure.Storage.Files.DataLake.Tests
 
             // Arrange
             DataLakeFileClient file = InstrumentClient(test.FileSystem.GetFileClient(GetNewFileName()));
-            await file.CreateAsync();
+            await file.CreateIfNotExistsAsync();
             var data = GetRandomBuffer(Constants.KB);
 
             using (var stream = new MemoryStream(data))
@@ -1865,7 +1916,7 @@ namespace Azure.Storage.Files.DataLake.Tests
 
             // Arrange
             DataLakeFileClient file = InstrumentClient(test.FileSystem.GetFileClient(GetNewFileName()));
-            await file.CreateAsync();
+            await file.CreateIfNotExistsAsync();
             var data = GetRandomBuffer(Constants.KB);
 
             using (var stream = new MemoryStream(data))
@@ -1881,6 +1932,27 @@ namespace Azure.Storage.Files.DataLake.Tests
         }
 
         [Test]
+        public async Task FlushDataAsync_CloseTwice()
+        {
+            await using DisposingFileSystem test = await GetNewFileSystem();
+
+            // Arrange
+            DataLakeFileClient file = InstrumentClient(test.FileSystem.GetFileClient(GetNewFileName()));
+            await file.CreateAsync();
+            var data = GetRandomBuffer(Constants.KB);
+
+            using Stream stream = new MemoryStream(data);
+            await file.AppendAsync(stream, 0);
+
+            // Act
+            await file.FlushAsync(Constants.KB, close: true);
+            Response<PathInfo> response = await file.FlushAsync(Constants.KB, close: true);
+
+            // Assert
+            AssertValidStoragePathInfo(response.Value);
+        }
+
+        [Test]
         public async Task FlushDataAsync_Conditions()
         {
             var garbageLeaseId = GetGarbageLeaseId();
@@ -1890,7 +1962,7 @@ namespace Azure.Storage.Files.DataLake.Tests
 
                 // Arrange
                 DataLakeFileClient file = InstrumentClient(test.FileSystem.GetFileClient(GetNewFileName()));
-                await file.CreateAsync();
+                await file.CreateIfNotExistsAsync();
                 var data = GetRandomBuffer(Constants.KB);
 
                 using (var stream = new MemoryStream(data))
@@ -1919,7 +1991,7 @@ namespace Azure.Storage.Files.DataLake.Tests
 
                 // Arrange
                 DataLakeFileClient file = InstrumentClient(test.FileSystem.GetFileClient(GetNewFileName()));
-                await file.CreateAsync();
+                await file.CreateIfNotExistsAsync();
                 var data = GetRandomBuffer(Size);
 
                 using (var stream = new MemoryStream(data))
@@ -3136,7 +3208,6 @@ namespace Azure.Storage.Files.DataLake.Tests
         }
 
         [Test]
-        [PlaybackOnly("Not released yet")]
         [ServiceVersion(Min = DataLakeClientOptions.ServiceVersion.V2019_12_12)]
         public async Task ScheduleDeletionAsync_Relative()
         {
@@ -3165,7 +3236,6 @@ namespace Azure.Storage.Files.DataLake.Tests
         }
 
         [Test]
-        [PlaybackOnly("Not released yet")]
         [ServiceVersion(Min = DataLakeClientOptions.ServiceVersion.V2019_12_12)]
         public async Task ScheduleDeletionAsync_RelativeToFileCreationTime()
         {
@@ -3185,7 +3255,6 @@ namespace Azure.Storage.Files.DataLake.Tests
         }
 
         [Test]
-        [PlaybackOnly("Not released yet")]
         [ServiceVersion(Min = DataLakeClientOptions.ServiceVersion.V2019_12_12)]
         public async Task ScheduleDeletionAsync_Error()
         {
@@ -3204,7 +3273,6 @@ namespace Azure.Storage.Files.DataLake.Tests
         }
 
         [Test]
-        [PlaybackOnly("Not released yet")]
         [ServiceVersion(Min = DataLakeClientOptions.ServiceVersion.V2019_12_12)]
         public async Task ScheduleDeletionAsync_Absolute()
         {
@@ -3225,7 +3293,6 @@ namespace Azure.Storage.Files.DataLake.Tests
         }
 
         [Test]
-        [PlaybackOnly("Not released yet")]
         [ServiceVersion(Min = DataLakeClientOptions.ServiceVersion.V2019_12_12)]
         public async Task ScheduleDeletionAsync_RemoveExpiry()
         {
@@ -3510,6 +3577,82 @@ namespace Azure.Storage.Files.DataLake.Tests
                         options),
                     e => { });
             }
+        }
+
+        [Test]
+        [ServiceVersion(Min = DataLakeClientOptions.ServiceVersion.V2020_02_10)]
+        public async Task QueryAsync_ArrowConfiguration()
+        {
+            // Arrange
+            await using DisposingFileSystem test = await GetNewFileSystem();
+            DataLakeFileClient file = test.FileSystem.GetFileClient(GetNewFileName());
+            Stream stream = CreateDataStream(Constants.KB);
+            await file.UploadAsync(stream);
+
+            // Act
+            string query = @"SELECT _2 from BlobStorage WHERE _1 > 250;";
+            DataLakeQueryOptions options = new DataLakeQueryOptions
+            {
+                OutputTextConfiguration = new DataLakeQueryArrowOptions
+                {
+                    Schema = new List<DataLakeQueryArrowField>()
+                    {
+                        new DataLakeQueryArrowField
+                        {
+                            Type = DataLakeQueryArrowFieldType.Decimal,
+                            Name = "Name",
+                            Precision = 4,
+                            Scale = 2
+                        }
+                    }
+                }
+            };
+            Response<FileDownloadInfo> response = await file.QueryAsync(
+                query,
+                options: options);
+
+            MemoryStream memoryStream = new MemoryStream();
+            await response.Value.Content.CopyToAsync(memoryStream);
+
+            // Assert
+            Assert.AreEqual("/////4AAAAAQAAAAAAAKAAwABgAFAAgACgAAAAABAwAMAAAACAAIAAAABAAIAAAABAAAAAEAAAAUAAAAEAAUAAgABgAHAAwAAAAQABAAAAAAAAEHJAAAABQAAAAEAAAAAAAAAAgADAAEAAgACAAAAAQAAAACAAAABAAAAE5hbWUAAAAAAAAAAP////9wAAAAEAAAAAAACgAOAAYABQAIAAoAAAAAAwMAEAAAAAAACgAMAAAABAAIAAoAAAAwAAAABAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAP////+IAAAAFAAAAAAAAAAMABYABgAFAAgADAAMAAAAAAMDABgAAAAAAgAAAAAAAAAACgAYAAwABAAIAAoAAAA8AAAAEAAAACAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAABAAAAIAAAAAAAAAAAAAAAAAAAAJABAAAAAAAAAAAAAAAAAACQAQAAAAAAAAAAAAAAAAAAkAEAAAAAAAAAAAAAAAAAAJABAAAAAAAAAAAAAAAAAACQAQAAAAAAAAAAAAAAAAAAkAEAAAAAAAAAAAAAAAAAAJABAAAAAAAAAAAAAAAAAACQAQAAAAAAAAAAAAAAAAAAkAEAAAAAAAAAAAAAAAAAAJABAAAAAAAAAAAAAAAAAACQAQAAAAAAAAAAAAAAAAAAkAEAAAAAAAAAAAAAAAAAAJABAAAAAAAAAAAAAAAAAACQAQAAAAAAAAAAAAAAAAAAkAEAAAAAAAAAAAAAAAAAAJABAAAAAAAAAAAAAAAAAACQAQAAAAAAAAAAAAAAAAAAkAEAAAAAAAAAAAAAAAAAAJABAAAAAAAAAAAAAAAAAACQAQAAAAAAAAAAAAAAAAAAkAEAAAAAAAAAAAAAAAAAAJABAAAAAAAAAAAAAAAAAACQAQAAAAAAAAAAAAAAAAAAkAEAAAAAAAAAAAAAAAAAAJABAAAAAAAAAAAAAAAAAACQAQAAAAAAAAAAAAAAAAAAkAEAAAAAAAAAAAAAAAAAAJABAAAAAAAAAAAAAAAAAACQAQAAAAAAAAAAAAAAAAAAkAEAAAAAAAAAAAAAAAAAAJABAAAAAAAAAAAAAAAAAACQAQAAAAAAAAAAAAAAAAAA", Convert.ToBase64String(memoryStream.ToArray()));
+        }
+
+        [Test]
+        [ServiceVersion(Min = DataLakeClientOptions.ServiceVersion.V2020_02_10)]
+        public async Task QueryAsync_ArrowConfigurationInput()
+        {
+            // Arrange
+            await using DisposingFileSystem test = await GetNewFileSystem();
+            DataLakeFileClient file = test.FileSystem.GetFileClient(GetNewFileName());
+            Stream stream = CreateDataStream(Constants.KB);
+            await file.UploadAsync(stream);
+
+            // Act
+            string query = @"SELECT _2 from BlobStorage WHERE _1 > 250;";
+            DataLakeQueryOptions options = new DataLakeQueryOptions
+            {
+                InputTextConfiguration = new DataLakeQueryArrowOptions
+                {
+                    Schema = new List<DataLakeQueryArrowField>()
+                    {
+                        new DataLakeQueryArrowField
+                        {
+                            Type = DataLakeQueryArrowFieldType.Decimal,
+                            Name = "Name",
+                            Precision = 4,
+                            Scale = 2
+                        }
+                    }
+                }
+            };
+
+            await TestHelper.AssertExpectedExceptionAsync<ArgumentException>(
+                file.QueryAsync(
+                query,
+                options: options),
+                e => Assert.AreEqual($"{nameof(DataLakeQueryArrowOptions)} can only be used for output serialization.", e.Message));
+
         }
 
         private Stream CreateDataStream(long size)

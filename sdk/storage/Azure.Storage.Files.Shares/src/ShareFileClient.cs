@@ -796,7 +796,8 @@ namespace Azure.Storage.Files.Shares
                 }
                 catch (RequestFailedException storageRequestFailedException)
                 when (storageRequestFailedException.ErrorCode == ShareErrorCode.ResourceNotFound
-                    || storageRequestFailedException.ErrorCode == ShareErrorCode.ShareNotFound)
+                    || storageRequestFailedException.ErrorCode == ShareErrorCode.ShareNotFound
+                    || storageRequestFailedException.ErrorCode == ShareErrorCode.ParentNotFound)
                 {
                     return Response.FromValue(false, default);
                 }
@@ -4200,8 +4201,9 @@ namespace Azure.Storage.Files.Shares
             GetRangeListInternal(
                 options?.Range,
                 options?.Snapshot,
-                options?.PreviousSnapshot,
+                previousSnapshot: default,
                 options?.Conditions,
+                operationName: default,
                 async: false,
                 cancellationToken)
                 .EnsureCompleted();
@@ -4234,8 +4236,9 @@ namespace Azure.Storage.Files.Shares
             await GetRangeListInternal(
                 options?.Range,
                 options?.Snapshot,
-                options?.PreviousSnapshot,
+                previousSnapshot: default,
                 options?.Conditions,
+                operationName: default,
                 async: true,
                 cancellationToken)
                 .ConfigureAwait(false);
@@ -4277,6 +4280,7 @@ namespace Azure.Storage.Files.Shares
                 snapshot: default,
                 previousSnapshot: default,
                 conditions,
+                operationName: default,
                 async: false,
                 cancellationToken)
                 .EnsureCompleted();
@@ -4315,6 +4319,7 @@ namespace Azure.Storage.Files.Shares
                 snapshot: default,
                 previousSnapshot: default,
                 conditions: default,
+                operationName: default,
                 async: false,
                 cancellationToken)
                 .EnsureCompleted();
@@ -4356,6 +4361,7 @@ namespace Azure.Storage.Files.Shares
                 snapshot: default,
                 previousSnapshot: default,
                 conditions,
+                operationName: default,
                 async: true,
                 cancellationToken)
                 .ConfigureAwait(false);
@@ -4394,6 +4400,7 @@ namespace Azure.Storage.Files.Shares
                 snapshot: default,
                 previousSnapshot: default,
                 conditions: default,
+                operationName: default,
                 async: true,
                 cancellationToken)
                 .ConfigureAwait(false);
@@ -4426,6 +4433,9 @@ namespace Azure.Storage.Files.Shares
         /// Optional <see cref="ShareFileRequestConditions"/> to add conditions
         /// on creating the file.
         /// </param>
+        /// <param name="operationName">
+        /// Name of the calling API
+        /// </param>
         /// <param name="async">
         /// Whether to invoke the operation asynchronously.
         /// </param>
@@ -4446,6 +4456,7 @@ namespace Azure.Storage.Files.Shares
             string snapshot,
             string previousSnapshot,
             ShareFileRequestConditions conditions,
+            string operationName,
             bool async,
             CancellationToken cancellationToken)
         {
@@ -4468,7 +4479,7 @@ namespace Azure.Storage.Files.Shares
                         leaseId: conditions?.LeaseId,
                         async: async,
                         cancellationToken: cancellationToken,
-                        operationName: $"{nameof(ShareFileClient)}.{nameof(GetRangeList)}")
+                        operationName: operationName?? $"{nameof(ShareFileClient)}.{nameof(GetRangeList)}")
                         .ConfigureAwait(false);
                     return Response.FromValue(new ShareFileRangeInfo(response.Value), response.GetRawResponse());
                 }
@@ -4484,6 +4495,80 @@ namespace Azure.Storage.Files.Shares
             }
         }
         #endregion GetRangeList
+
+        #region GetRangeListDiff
+        /// <summary>
+        /// Returns the list of ranges that have changed in the file since previousSnapshot
+        /// was taken.
+        ///
+        /// For more information, see
+        /// <see href="https://docs.microsoft.com/rest/api/storageservices/list-ranges">
+        /// List Ranges</see>.
+        /// </summary>
+        /// <param name="options">
+        /// Optional parameters.
+        /// </param>
+        /// <param name="cancellationToken">
+        /// Optional <see cref="CancellationToken"/> to propagate
+        /// notifications that the operation should be cancelled.
+        /// </param>
+        /// <returns>
+        /// A <see cref="Response{StorageFileRangeInfo}"/> describing the
+        /// valid ranges for this file.
+        /// </returns>
+        /// <remarks>
+        /// A <see cref="RequestFailedException"/> will be thrown if
+        /// a failure occurs.
+        /// </remarks>
+        public virtual Response<ShareFileRangeInfo> GetRangeListDiff(
+            ShareFileGetRangeListDiffOptions options = default,
+            CancellationToken cancellationToken = default) =>
+            GetRangeListInternal(
+                options?.Range,
+                options?.Snapshot,
+                options?.PreviousSnapshot,
+                options?.Conditions,
+                operationName: $"{nameof(ShareFileClient)}.{nameof(GetRangeListDiff)}",
+                async: false,
+                cancellationToken)
+                .EnsureCompleted();
+
+        /// <summary>
+        /// Returns the list of ranges that have changed in the file since previousSnapshot
+        /// was taken.
+        ///
+        /// For more information, see
+        /// <see href="https://docs.microsoft.com/rest/api/storageservices/list-ranges">
+        /// List Ranges</see>.
+        /// </summary>
+        /// <param name="options">
+        /// Optional parameters.
+        /// </param>
+        /// <param name="cancellationToken">
+        /// Optional <see cref="CancellationToken"/> to propagate
+        /// notifications that the operation should be cancelled.
+        /// </param>
+        /// <returns>
+        /// A <see cref="Response{StorageFileRangeInfo}"/> describing the
+        /// valid ranges for this file.
+        /// </returns>
+        /// <remarks>
+        /// A <see cref="RequestFailedException"/> will be thrown if
+        /// a failure occurs.
+        /// </remarks>
+        public virtual async Task<Response<ShareFileRangeInfo>> GetRangeListDiffAsync(
+            ShareFileGetRangeListDiffOptions options = default,
+            CancellationToken cancellationToken = default) =>
+            await GetRangeListInternal(
+                options?.Range,
+                options?.Snapshot,
+                options?.PreviousSnapshot,
+                options?.Conditions,
+                operationName: $"{nameof(ShareFileClient)}.{nameof(GetRangeListDiff)}",
+                async: true,
+                cancellationToken)
+                .ConfigureAwait(false);
+        #endregion GetRangeListDiff
 
         #region GetHandles
         /// <summary>

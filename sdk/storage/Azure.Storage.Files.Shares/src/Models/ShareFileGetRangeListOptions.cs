@@ -1,10 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace Azure.Storage.Files.Shares.Models
 {
     /// <summary>
@@ -25,15 +21,6 @@ namespace Azure.Storage.Files.Shares.Models
         /// Create a snapshot of a share</see>.
         /// </summary>
         public string Snapshot { get; set; }
-
-        /// <summary>
-        /// Specifies that the response will contain only ranges that were
-        /// changed between target file and previous snapshot.  Changed ranges
-        /// include both updated and cleared ranges. The target file may be a
-        /// snapshot, as long as the snapshot specified by
-        /// <see cref="PreviousSnapshot"/> is the older of the two.
-        /// </summary>
-        public string PreviousSnapshot { get; set; }
 
         /// <summary>
         /// Optional <see cref="ShareFileRequestConditions"/> to add conditions
